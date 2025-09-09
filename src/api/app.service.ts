@@ -1,4 +1,4 @@
-import { HttpStatus, ValidationPipe } from "@nestjs/common";
+import { HttpStatus, Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { config } from "src/config/env.config";
@@ -18,22 +18,26 @@ export class Application {
 
         app.use(cookieParser())
 
-        const api='api'
+        const api = 'api'
         app.setGlobalPrefix(api)
-        const configSwagger=new DocumentBuilder()
+        const configSwagger = new DocumentBuilder()
             .setTitle('Theatr')
             .setVersion('1.0.0')
             .addBearerAuth({
-                type:'http',
-                scheme:'Bearer',
-                in:'Header'
+                type: 'http',
+                scheme: 'Bearer',
+                in: 'Header'
             })
             .build()
 
-        const documentSwagger=SwaggerModule.createDocument(app,configSwagger)
-        SwaggerModule.setup(api,app,documentSwagger)
+        const documentSwagger = SwaggerModule.createDocument(app, configSwagger)
+        SwaggerModule.setup(api, app, documentSwagger)
 
+        const logging = new Logger('Swagger-cinemauz')
         const PORT = Number(config.PORT) ?? 3003
-        app.listen(PORT,()=>console.log('Server is running',PORT))
+
+        await app.listen(PORT, () => {setTimeout(() => {
+            logging.log(`Swagger UI: http://localhost:${PORT}/${api}`)}
+        )});
     }
 }
