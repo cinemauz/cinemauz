@@ -3,6 +3,7 @@ dotenv.config()
 
 type ConfigType = {
     PORT: number,
+    APP_URL:string,
 
     DB_URL: string
     DB_SYNC: boolean,
@@ -23,7 +24,7 @@ type ConfigType = {
 
 export const config: ConfigType = {
     PORT: Number(process.env.PORT),
-
+    APP_URL:String(process.env.APP_URL),
     DB_URL:
         String(process.env.NODE_ENV) == 'dev' ?
             String(process.env.DEV_DB_URl) :
