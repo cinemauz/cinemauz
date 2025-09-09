@@ -16,6 +16,6 @@ export class AdminEntity extends BaseEntity {
   @Column({ type: 'enum', enum: Roles, default: Roles.ADMIN })
   role: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: true })
   is_active: boolean;
 }

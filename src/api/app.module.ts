@@ -14,6 +14,7 @@ import { TicketModule } from './post/ticket/ticket.module';
 import { OrderModule } from './post/order/order.module';
 import { PaymentModule } from './post/payment/payment.module';
 import { WalletModule } from './post/wallet/wallet.module';
+import { AuthModule } from './user/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { WalletModule } from './post/wallet/wallet.module';
       synchronize: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
       autoLoadEntities: true,
+      logging:['error','warn']
     }),
     JwtModule.register({
       global: true,
@@ -39,6 +41,7 @@ import { WalletModule } from './post/wallet/wallet.module';
     OrderModule,
     PaymentModule,
     WalletModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
