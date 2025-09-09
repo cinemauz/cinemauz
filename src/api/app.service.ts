@@ -37,7 +37,7 @@ export class Application {
         const PORT = Number(config.PORT) ?? 3003
 
         await app.listen(PORT, () => {setTimeout(() => {
-            logging.log(`Swagger UI: http://localhost:${PORT}/${api}`)}
+            logging.log(`Swagger UI: http://${config.APP_URL}:${PORT}/${api}`)}
         )});
     }
 }
