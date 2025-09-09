@@ -76,7 +76,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ DELETE ============================
-  async delete(id: string): Promise<ISuccessRes> {
+  async remove(id: string): Promise<ISuccessRes> {
     await this.findOneById(id);
     await this.baseRepo.delete(id);
     return successRes({});

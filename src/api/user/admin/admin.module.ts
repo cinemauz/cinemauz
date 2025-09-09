@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminEntity } from 'src/core/entity/admin.entity';
+import { AuthModule } from '../auth/auth.module';
+import { CryptoService } from 'src/infrastructure/crypt/Crypto';
+import { TokenService } from 'src/infrastructure/token/Token';
+import { BaseService } from 'src/infrastructure/base/base.service';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([AdminEntity]), AuthModule],
   controllers: [AdminController],
-  providers: [AdminService],
+  providers: [AdminService, CryptoService, TokenService,BaseService],
 })
 export class AdminModule {}
