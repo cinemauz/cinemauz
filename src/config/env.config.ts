@@ -11,6 +11,7 @@ type ConfigType = {
     SUPERADMIN: {
         PASSWORD: string,
         USERNAME: string
+        NAME:string
     }
 
     TOKEN: {
@@ -23,24 +24,25 @@ type ConfigType = {
 }
 
 export const config: ConfigType = {
-    PORT: Number(process.env.PORT),
-    APP_URL:String(process.env.APP_URL),
-    DB_URL:
-        String(process.env.NODE_ENV) == 'dev' ?
-            String(process.env.DEV_DB_URl) :
-            String(process.env.PROD_DEV_URL),
-    DB_SYNC: String(process.env.NODE_ENV) === 'dev' ? true : false,
+  PORT: Number(process.env.PORT),
+  APP_URL: String(process.env.APP_URL),
+  DB_URL:
+    String(process.env.NODE_ENV) == 'dev'
+      ? String(process.env.DEV_DB_URl)
+      : String(process.env.PROD_DEV_URL),
+  DB_SYNC: String(process.env.NODE_ENV) === 'dev' ? true : false,
 
-    SUPERADMIN:{
-        PASSWORD:String(process.env.ADMIN_PASSWORD),
-        USERNAME:String(process.env.ADMIN_USERNAME)
-    },
+  SUPERADMIN: {
+    PASSWORD: String(process.env.ADMIN_PASSWORD),
+    USERNAME: String(process.env.ADMIN_USERNAME),
+    NAME: String(process.env.ADMIN_NAME),
+  },
 
-    TOKEN: {
-        ACCESS_KEY: String(process.env.ACCESS_TOKEN_KEY),
-        ACCESS_TIME: String(process.env.ACCESS_TOKEN_TIME),
+  TOKEN: {
+    ACCESS_KEY: String(process.env.ACCESS_TOKEN_KEY),
+    ACCESS_TIME: String(process.env.ACCESS_TOKEN_TIME),
 
-        REFRESH_KEY: String(process.env.REFRESH_TOKEN_KEY),
-        REFRESH_TIME: String(process.env.REFRESH_TOKEN_KEY)
-    }
-}
+    REFRESH_KEY: String(process.env.REFRESH_TOKEN_KEY),
+    REFRESH_TIME: String(process.env.REFRESH_TOKEN_KEY),
+  },
+};
