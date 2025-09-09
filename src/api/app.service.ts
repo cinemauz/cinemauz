@@ -7,7 +7,9 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 export class Application {
     static async main(): Promise<void> {
-        const app = await NestFactory.create(AppModule)
+        const app = await NestFactory.create(AppModule,{
+            logger:['error','warn','log']
+        })
 
         app.useGlobalPipes(new ValidationPipe({
             whitelist: true,

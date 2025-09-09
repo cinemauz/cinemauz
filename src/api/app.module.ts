@@ -23,6 +23,7 @@ import { WalletModule } from './post/wallet/wallet.module';
       synchronize: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
       autoLoadEntities: true,
+      logging:['error','warn']
     }),
     JwtModule.register({
       global: true,
