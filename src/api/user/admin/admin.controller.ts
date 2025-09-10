@@ -31,4 +31,5 @@ export class AdminController {
   remove(@Param('id') id: string) {
     return this.adminService.remove(id);
   }
+
 }

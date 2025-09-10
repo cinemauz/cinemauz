@@ -55,7 +55,7 @@ export class AuthService {
     return successRes({})
   }
 
-  // ================================== IPDATE PASSWORD ==================================
+  // ================================== UPDATE PASSWORD ==================================
   async UpdatePassword(oldPassword: string, newPassword: string, id: number) {
 
   }
