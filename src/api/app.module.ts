@@ -7,7 +7,6 @@ import { CustomerModule } from './user/customer/customer.module';
 import { GenreModule } from './post/genre/genre.module';
 import { ReviewModule } from './post/review/review.module';
 import { MovieModule } from './post/movie/movie.module';
-import { CountryModule } from './post/country/country.module';
 import { RoomModule } from './post/room/room.module';
 import { ShowtimeModule } from './post/showtime/showtime.module';
 import { TicketModule } from './post/ticket/ticket.module';
@@ -34,7 +33,6 @@ import { AuthModule } from './user/auth/auth.module';
     GenreModule,
     ReviewModule,
     MovieModule,
-    CountryModule,
     RoomModule,
     ShowtimeModule,
     TicketModule,

@@ -1,4 +1,4 @@
-export enum languages{
+export enum Languages{
     Uzb='Uzb',
     Rus='Rus',
     Eng='Eng',
