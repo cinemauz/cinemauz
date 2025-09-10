@@ -15,6 +15,7 @@ import { PaymentModule } from './post/payment/payment.module';
 import { WalletModule } from './post/wallet/wallet.module';
 import { AuthModule } from './user/auth/auth.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { CryptoService } from 'src/infrastructure/crypt/Crypto';
 
 @Module({
   imports: [
@@ -44,5 +45,6 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     WalletModule,
     AuthModule,
   ],
+  providers: [CryptoService],
 })
 export class AppModule {}

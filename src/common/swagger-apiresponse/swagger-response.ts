@@ -4,7 +4,7 @@ import { ApiResponseOptions } from '@nestjs/swagger';
 export class SwaggerApi {
   // ======================== SUCCESS ========================
   static ApiSuccessResponse(
-    data: object = {},
+    data: object | string = {},
     status: number = HttpStatus.OK,
     message: string = 'success',
   ): ApiResponseOptions {
