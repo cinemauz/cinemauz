@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from "class-validator";
 
 export class CreateReviewDto {
+  // ------------------------------ COMMENT ------------------------------
   @ApiPropertyOptional({
     description: 'Mijozning sharhi',
     example: 'Ajoyib film, juda yoqdi!',
@@ -10,6 +11,7 @@ export class CreateReviewDto {
   @IsOptional()
   comment: string;
 
+  // ------------------------------ RATING ------------------------------
   @ApiPropertyOptional({
     description: 'Filmdan baho (1 dan 5 gacha)',
     example: 5,
@@ -22,6 +24,7 @@ export class CreateReviewDto {
   @IsOptional()
   rating: number;
 
+  // ------------------------------ CISTOMER ID ------------------------------
   @ApiProperty({
     description: 'Mijoz ID',
     example: 1,
@@ -30,6 +33,7 @@ export class CreateReviewDto {
   @IsNotEmpty()
   customer_id: number;
 
+  // ------------------------------ MOVIE ID ------------------------------
   @ApiProperty({
     description: 'Film ID',
     example: 10,

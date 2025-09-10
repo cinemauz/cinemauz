@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class CreateRoomDto {
+  // ------------------------------ NAME ------------------------------
   @ApiProperty({
     description: 'Xona nomi',
     example: 'VIP Hall',
@@ -10,6 +11,7 @@ export class CreateRoomDto {
   @IsString()
   name: string;
 
+  // ------------------------------ LOCATION ------------------------------
   @ApiProperty({
     description: 'Xona joylashuvi',
     example: '1st Floor, Building A',
@@ -18,6 +20,7 @@ export class CreateRoomDto {
   @IsNotEmpty()
   location: string;
 
+  // ------------------------------ TOTAL SEATS ------------------------------
   @ApiProperty({
     description: 'Xonadagi umumiy o‘rindiqlar soni',
     example: 120,

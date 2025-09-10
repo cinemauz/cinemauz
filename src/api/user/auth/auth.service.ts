@@ -13,6 +13,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(private readonly jwt: TokenService) { }
+  
   // ================================== NEW TOKEN ==================================
   async newToken(repository: Repository<any>, token: string) {
     const data: any = await this.jwt.verifyToken(
@@ -55,7 +56,7 @@ export class AuthService {
     return successRes({})
   }
 
-  // ================================== IPDATE PASSWORD ==================================
+  // ================================== UPDATE PASSWORD ==================================
   async UpdatePassword(oldPassword: string, newPassword: string, id: number) {
 
   }

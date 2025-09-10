@@ -2,9 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator";
 
 export class CreateTicketDto {
+  // ------------------------------ PRICE------------------------------
   @ApiProperty({
     description: 'Bilet narxi',
-    example: 15.50,
+    example: 15.5,
     minimum: 0,
   })
   @IsNumber()
@@ -12,6 +13,7 @@ export class CreateTicketDto {
   @IsNotEmpty()
   price: number;
 
+  // ------------------------------ SHOW TIME ID ------------------------------
   @ApiProperty({
     description: 'Showtime ID',
     example: 5,
@@ -20,6 +22,7 @@ export class CreateTicketDto {
   @IsNotEmpty()
   showtime_id: number;
 
+  // ------------------------------ STATUS ------------------------------
   @ApiPropertyOptional({
     description: 'Bilet holati (true = mavjud, false = sotilgan)',
     example: true,

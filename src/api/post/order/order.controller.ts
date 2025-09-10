@@ -23,19 +23,19 @@ export class OrderController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get order by id' })
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+  findOne(@Param('id') id: number) {
+    return this.orderService.findOne(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update order by id' })
-  update(@Param('id') id: string, @Body() dto: UpdateOrderDto) {
+  update(@Param('id') id: number, @Body() dto: UpdateOrderDto) {
     return this.orderService.update(id, dto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete order by id' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.orderService.remove(id);
   }
 }

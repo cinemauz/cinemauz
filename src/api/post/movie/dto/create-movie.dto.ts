@@ -1,9 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
-import { Country } from "src/config/country.config";
-import { Languages } from "src/config/lang.config";
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Matches,
+} from 'class-validator';
+import { Country } from 'src/common/enum/country';
+import { Languages } from 'src/common/enum/lang';
 
 export class CreateMovieDto {
+  // ------------------------------ TITLE ------------------------------
+
   @ApiProperty({
     description: 'Filmnig sarlavhasi',
     example: 'Inception',
@@ -12,6 +23,7 @@ export class CreateMovieDto {
   @IsNotEmpty()
   title: string;
 
+  // ------------------------------ DESCRIPTION ------------------------------
   @ApiPropertyOptional({
     description: 'Filmnig tavsifi',
     example: 'A mind-bending thriller about dreams within dreams.',
@@ -20,14 +32,18 @@ export class CreateMovieDto {
   @IsString()
   description?: string;
 
+  // ------------------------------ DURATION ------------------------------
   @ApiProperty({
-    description: 'Filmnig davomiyligi (ISO 8601 formatida)',
-    example: '1970-01-01T01:50:00.000Z',
+    description: 'Filmnig davomiyligi (HH:mm:ss formatida)',
+    example: '02:15:20',
   })
-  @IsDateString()
   @IsNotEmpty()
-  duration: Date;
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/, {
+    message: 'Duration must be in HH:mm:ss format',
+  })
+  duration: string;
 
+  // ------------------------------ REALASE DATE ------------------------------
   @ApiPropertyOptional({
     description: 'Filmnig chiqish sanasi',
     example: '2010-07-16',
@@ -36,6 +52,7 @@ export class CreateMovieDto {
   @IsDateString()
   realase_date?: Date;
 
+  // ------------------------------ IMAGE URL ------------------------------
   @ApiProperty({
     description: 'Filmnig rasmi URL',
     example: 'https://example.com/movie-image.jpg',
@@ -44,6 +61,7 @@ export class CreateMovieDto {
   @IsNotEmpty()
   image_url: string;
 
+  // ------------------------------ VIDEO URL ------------------------------
   @ApiProperty({
     description: 'Filmnig video URL',
     example: 'https://example.com/movie-video.mp4',
@@ -52,6 +70,7 @@ export class CreateMovieDto {
   @IsNotEmpty()
   video_url: string;
 
+  // ------------------------------ LANGUAGES ------------------------------
   @ApiPropertyOptional({
     description: 'Filmnig tili',
     enum: Languages,
@@ -60,6 +79,7 @@ export class CreateMovieDto {
   @IsEnum(Languages)
   language?: Languages;
 
+  // ------------------------------ COUNTRY ------------------------------
   @ApiPropertyOptional({
     description: 'Filmnig mamlakati',
     enum: Country,
@@ -68,6 +88,7 @@ export class CreateMovieDto {
   @IsEnum(Country)
   country?: Country;
 
+  // ------------------------------ GENRE ID ------------------------------
   @ApiProperty({
     description: 'Filmnig janri ID',
     example: 1,
@@ -76,6 +97,7 @@ export class CreateMovieDto {
   @IsNotEmpty()
   genre_id: number;
 
+  // ------------------------------ ADMIN ID ------------------------------
   @ApiProperty({
     description: 'Filmnig admin ID',
     example: 1,

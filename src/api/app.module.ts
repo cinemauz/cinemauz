@@ -14,17 +14,21 @@ import { OrderModule } from './post/order/order.module';
 import { PaymentModule } from './post/payment/payment.module';
 import { WalletModule } from './post/wallet/wallet.module';
 import { AuthModule } from './user/auth/auth.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { CryptoService } from 'src/infrastructure/crypt/Crypto';
 
 @Module({
   imports: [
+    // ========================= DATABASE =========================
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: config.DB_URL,
       synchronize: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      logging:['error','warn']
+      logging: ['error', 'warn'],
     }),
+    // ========================= JWT =========================
     JwtModule.register({
       global: true,
     }),
@@ -41,5 +45,6 @@ import { AuthModule } from './user/auth/auth.module';
     WalletModule,
     AuthModule,
   ],
+  providers: [CryptoService],
 })
 export class AppModule {}

@@ -18,17 +18,17 @@ export class WalletController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id:number) {
     return this.walletService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWalletDto: UpdateWalletDto) {
+  update(@Param('id') id:number, @Body() updateWalletDto: UpdateWalletDto) {
     return this.walletService.update(+id, updateWalletDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id:number) {
     return this.walletService.remove(+id);
   }
 }

@@ -1,5 +1,5 @@
 export interface IToken {
-  id: string;
+  id: number;
   is_active: boolean;
   role: string;
 }

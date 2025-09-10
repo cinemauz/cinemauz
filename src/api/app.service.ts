@@ -1,45 +1,57 @@
-import { HttpStatus, Logger, ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { config } from "src/config/env.config";
-import cookieParser from 'cookie-parser'
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { config } from 'src/config/env.config';
+import cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export class Application {
-    static async main(): Promise<void> {
-        const app = await NestFactory.create(AppModule,{
-            logger:['error','warn','log']
-        })
+  static async main(): Promise<void> {
+    // ========================= DATABASE =========================
+    const app = await NestFactory.create(AppModule, {
+      logger: ['error', 'warn', 'log'],
+    });
 
-        app.useGlobalPipes(new ValidationPipe({
-            whitelist: true,
-            transform: true,
-            forbidNonWhitelisted: true,
-            errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-        }))
+    // ========================= VALIDATSIYA =========================
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      }),
+    );
 
-        app.use(cookieParser())
+    // ========================= COOKIE =========================
+    app.use(cookieParser());
 
-        const api = 'api'
-        app.setGlobalPrefix(api)
-        const configSwagger = new DocumentBuilder()
-            .setTitle('Theatr')
-            .setVersion('1.0.0')
-            .addBearerAuth({
-                type: 'http',
-                scheme: 'Bearer',
-                in: 'Header'
-            })
-            .build()
+    const api = 'api';
+    // ========================= GLOBAL URL =========================
+    app.setGlobalPrefix(api);
 
-        const documentSwagger = SwaggerModule.createDocument(app, configSwagger)
-        SwaggerModule.setup(api, app, documentSwagger)
+    // ========================= SWAGGER =========================
+    const configSwagger = new DocumentBuilder()
+      .setTitle('Theatr')
+      .setVersion('1.0.0')
+      .addBearerAuth({
+        type: 'http',
+        scheme: 'Bearer',
+        in: 'Header',
+      })
+      .build();
 
-        const logging = new Logger('Swagger-cinemauz')
-        const PORT = Number(config.PORT) ?? 3003
+    const documentSwagger = SwaggerModule.createDocument(app, configSwagger);
+    SwaggerModule.setup(api, app, documentSwagger);
 
-        await app.listen(PORT, () => {setTimeout(() => {
-            logging.log(`Swagger UI: http://${config.APP_URL}:${PORT}/${api}`)}
-        )});
-    }
+    const logging = new Logger('Swagger-cinemauz');
+
+    // ========================= PORT =========================
+    const PORT = Number(config.PORT) ?? 3003;
+
+    await app.listen(PORT, () => {
+      setTimeout(() => {
+        logging.log(`Swagger UI: http://${config.APP_URL}:${PORT}/${api}`);
+      });
+    });
+  }
 }
