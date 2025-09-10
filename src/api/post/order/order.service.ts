@@ -1,27 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BaseService } from 'src/infrastructure/base/base.service';
+import { OrderEntity } from 'src/core/entity/post/order.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderEntity } from 'src/core/entity/post/order.entity';
 
 @Injectable()
-export class OrderService {
+export class OrderService extends BaseService<CreateOrderDto, UpdateOrderDto, OrderEntity> {
   constructor(
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
-  ) {}
-
-  async create(dto: CreateOrderDto) {
-    // try {
-    //   const order = this.orderRepository.create(dto);
-    //   return await this.orderRepository.save(order);
-    // } catch (err) {
-    //   throw err;
-    // }
+  ) {
+    super(orderRepository); // ✅ BaseService ishlatilyapti
   }
 
-  async findAll(){
+  async create(dto: CreateOrderDto) {
+    try {
+      const order = this.orderRepository.create(dto);
+      return await this.orderRepository.save(order);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async findAll() {
     try {
       return await this.orderRepository.find({
         relations: ['customer', 'tickets', 'payments'],
@@ -45,14 +48,14 @@ export class OrderService {
   }
 
   async update(id: number, dto: UpdateOrderDto) {
-    // try {
-    //   await this.orderRepository.update(id, dto);
-    //   const updated = await this.orderRepository.findOne({ where: { id } });
-    //   if (!updated) throw new NotFoundException('Order not found');
-    //   return updated;
-    // } catch (err) {
-    //   throw err;
-    // }
+    try {
+      await this.orderRepository.update(id, dto);
+      const updated = await this.orderRepository.findOne({ where: { id } });
+      if (!updated) throw new NotFoundException('Order not found');
+      return updated;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async remove(id: number): Promise<void> {

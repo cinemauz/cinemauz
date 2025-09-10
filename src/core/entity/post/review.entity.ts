@@ -1,18 +1,21 @@
-import { BaseEntity } from "src/common/database/base.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity } from 'src/common/database/base.entity';
+import { CustomerEntity } from 'src/core/entity/users/customer.entity';
+import { MovieEntity } from 'src/core/entity/post/movie.entity';
 
-@Entity('review')
+@Entity('reviews')
 export class ReviewEntity extends BaseEntity {
-    
-    @Column({ type: 'text' })
-    comment: string
+  @Column({ type: 'text' })
+  comment: string;
 
-    @Column({ type: 'int' })
-    rating: number
+  @Column({ type: 'int', default: 5 })
+  rating: number;
 
-    @Column({ type: 'int' })
-    customer_id: number;
+  @ManyToOne(() => CustomerEntity, (customer) => customer.id, { eager: true })
+  @JoinColumn({ name: 'customer_id' })
+  customer: CustomerEntity;
 
-    @Column({ type: 'int' })
-    movie_id: number;
+  @ManyToOne(() => MovieEntity, (movie) => movie.id, { eager: true })
+  @JoinColumn({ name: 'movie_id' })
+  movie: MovieEntity;
 }

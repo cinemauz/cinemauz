@@ -22,7 +22,7 @@ export class CreateRoomDto {
 
   // ------------------------------ TOTAL SEATS ------------------------------
   @ApiProperty({
-    description: 'Xonadagi umumiy o‘rindiqlar soni',
+    description: 'Xonadagi umumiy o\'rindiqlar soni',
     example: 120,
   })
   @IsNumber()
