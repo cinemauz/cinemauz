@@ -1,10 +1,12 @@
 export const adminData = {
-  id: 'e6b189ff-1d45-44e9-a252-5a0b48f3678f',
-  createdAt: '2025-09-08T06:20:29.122Z',
-  updatedAt: '2025-09-08T06:20:29.122Z',
-  username: 'toshmat1',
+  id: 'bf14cea0-a9af-4abc-bad4-1b36302d0d56',
+  createdAt: '2025-09-10T15:06:07.283Z',
+  updatedAt: '2025-09-10T15:06:07.283Z',
+  name: 'John Doe',
+  username: 'johndoe123',
   hashed_password:
-    '$2b$07$r92vWiaxXdXShbtw2jgkbeG51qB2Ft7yLEnuTFEcmU8gfhzl.d5Eq',
-  is_active: false,
+    '$2b$07$GaDc.BaRiBbJdkuuIjB7MuCfN6/OK2ZuraJrrX6.4OY2BXvgm8tMK',
   role: 'ADMIN',
+  is_active: true,
+  balance: '0',
 };

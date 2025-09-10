@@ -29,6 +29,7 @@ export class AdminService
   ) {
     super(adminRepo);
   }
+
   // ================================ CREATE ADMIN ================================
   async createAdmin(createAdminDto: CreateAdminDto): Promise<ISuccessRes> {
     const { username, password, ...rest } = createAdminDto;
@@ -42,6 +43,10 @@ export class AdminService
     const data = this.adminRepo.create({ ...rest, username, hashed_password });
     await this.adminRepo.save(data);
     return successRes(data);
+  }
+  // ================================ UPDATE ADMIN ================================
+  updateAdmin(id: string, updateAdminDto: UpdateAdminDto) {
+    const {username,}=updateAdminDto
   }
   // ================================ ON MODULE INIT ================================
   async onModuleInit(): Promise<void> {
@@ -66,8 +71,4 @@ export class AdminService
       throw new InternalServerErrorException('Error on created super admin');
     }
   }
-  // update(id: string, updateAdminDto: UpdateAdminDto) {
-  //   return `This action updates a #${id} admin`;
-  // }
-
 }

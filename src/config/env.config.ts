@@ -1,27 +1,32 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
 type ConfigType = {
-    PORT: number,
-    APP_URL:string,
+  PORT: number;
+  APP_URL: string;
 
-    DB_URL: string
-    DB_SYNC: boolean,
+  DB_URL: string;
+  DB_SYNC: boolean;
 
-    SUPERADMIN: {
-        PASSWORD: string,
-        USERNAME: string
-        NAME:string
-    }
+  SUPERADMIN: {
+    PASSWORD: string;
+    USERNAME: string;
+    NAME: string;
+  };
 
-    TOKEN: {
-        ACCESS_KEY: string,
-        ACCESS_TIME: string,
+  TOKEN: {
+    ACCESS_KEY: string;
+    ACCESS_TIME: string;
 
-        REFRESH_KEY: string
-        REFRESH_TIME: string
-    }
-}
+    REFRESH_KEY: string;
+    REFRESH_TIME: string;
+  };
+  REDIS: {
+    HOST: string;
+    PORT: number;
+    PASSWORD: string;
+  };
+};
 
 export const config: ConfigType = {
   PORT: Number(process.env.PORT),
@@ -44,5 +49,10 @@ export const config: ConfigType = {
 
     REFRESH_KEY: String(process.env.REFRESH_TOKEN_KEY),
     REFRESH_TIME: String(process.env.REFRESH_TOKEN_KEY),
+  },
+  REDIS: {
+    HOST: String(process.env.REDIS_HOST),
+    PORT: Number(process.env.REDIS_PORT),
+    PASSWORD: String(process.env.REDIS_PASSWORD),
   },
 };

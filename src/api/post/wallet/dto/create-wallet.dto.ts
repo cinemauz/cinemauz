@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
 export class CreateWalletDto {
+  // ------------------------------ CARD NAME------------------------------
   @ApiPropertyOptional({
     description: 'Karta nomi',
     example: 'Visa Platinum',
@@ -10,6 +11,7 @@ export class CreateWalletDto {
   @IsOptional()
   card_name: string;
 
+  // ------------------------------ CARD NUMBER ------------------------------
   @ApiProperty({
     description: 'Karta raqami',
     example: 1234567890123456,
@@ -18,9 +20,10 @@ export class CreateWalletDto {
   @IsNotEmpty()
   card_number: number;
 
+  // ------------------------------ BALANCE ------------------------------
   @ApiProperty({
     description: 'Hisobdagi balans',
-    example: 1000.50,
+    example: 1000.5,
     minimum: 0,
   })
   @IsNumber()
@@ -28,6 +31,7 @@ export class CreateWalletDto {
   @IsNotEmpty()
   balance: number;
 
+  // ------------------------------ CUSTOMER ID ------------------------------
   @ApiProperty({
     description: 'Mijoz ID',
     example: 1,
