@@ -24,7 +24,7 @@ export class RoomController {
   @Get(':id')
   @ApiOperation({ summary: 'Get room by id' })
   findOne(@Param('id') id: string) {
-    return this.roomService.findOne(id);
+    return this.roomService.findOneById(id);
   }
 
   @Put(':id')

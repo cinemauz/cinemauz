@@ -1,18 +1,18 @@
 import { BaseEntity } from "src/common/database/base.entity";
 import { Column, Entity } from "typeorm";
 
-@Entity('payment')
-export class PaymentEntity extends BaseEntity {
+@Entity('review')
+export class ReviewEntity extends BaseEntity {
     
-    @Column({ type: 'bigint' })
-    total_price: number
+    @Column({ type: 'text' })
+    comment: string
 
-    @Column({ type: 'boolean' })
-    status: boolean
+    @Column({ type: 'int' })
+    rating: number
 
     @Column({ type: 'varchar' })
     customer_id: string;
 
     @Column({ type: 'varchar' })
-    order_id: string;
+    movie_id: string;
 }
