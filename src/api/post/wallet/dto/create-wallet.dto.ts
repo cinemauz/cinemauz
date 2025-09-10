@@ -1,20 +1,38 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
 export class CreateWalletDto {
-    @IsString()
-    @IsOptional()
-    card_name: string;
+  @ApiPropertyOptional({
+    description: 'Karta nomi',
+    example: 'Visa Platinum',
+  })
+  @IsString()
+  @IsOptional()
+  card_name: string;
 
-    @IsInt()
-    @IsNotEmpty()
-    card_number: number;
+  @ApiProperty({
+    description: 'Karta raqami',
+    example: 1234567890123456,
+  })
+  @IsInt()
+  @IsNotEmpty()
+  card_number: number;
 
-    @IsNumber()
-    @Min(0)
-    @IsNotEmpty()
-    balance: number;
+  @ApiProperty({
+    description: 'Hisobdagi balans',
+    example: 1000.50,
+    minimum: 0,
+  })
+  @IsNumber()
+  @Min(0)
+  @IsNotEmpty()
+  balance: number;
 
-    @IsInt()
-    @IsNotEmpty()
-    customer_id: number;
+  @ApiProperty({
+    description: 'Mijoz ID',
+    example: 1,
+  })
+  @IsInt()
+  @IsNotEmpty()
+  customer_id: number;
 }
