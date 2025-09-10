@@ -4,11 +4,11 @@ import { Column, Entity } from "typeorm";
 @Entity('ticket')
 export class TicketEntity extends BaseEntity{
 
-      @Column({ type: 'bigint'})
+      @Column({ type: 'decimal'})
       price: number;
 
-      @Column({ type: 'bigint'})
-      showtime_id: string;
+      @Column({ type: 'int'})
+      showtime_id: number;
 
       @Column({ type: 'boolean'})
       status: boolean;

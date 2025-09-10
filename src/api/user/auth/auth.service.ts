@@ -36,7 +36,7 @@ export class AuthService {
     const accessToken = await this.jwt.accessToken(payload);
     return successRes({ token: accessToken });
   }
-  
+
 // ================================== SIGN OUT ==================================
   async signOut(repository: Repository<any>, token: string, res: Response, tokenKey: string) {
      const data: any = await this.jwt.verifyToken(
@@ -53,5 +53,9 @@ export class AuthService {
      }
     res.clearCookie(tokenKey)
     return successRes({})
+  }
+
+  async UpdatePassword(oldPassword:string,newPassword:string,id:number){
+
   }
 }

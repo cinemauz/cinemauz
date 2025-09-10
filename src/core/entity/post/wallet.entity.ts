@@ -7,12 +7,12 @@ export class WalletEntity extends BaseEntity{
       @Column({ type: 'varchar'})
       card_name: string;
 
-      @Column({ type: 'bigint'})
+      @Column({ type: 'int'})
       card_number: number;
 
-      @Column({ type: 'bigint'})
+      @Column({ type: 'decimal'})
       balance: number;
 
-      @Column({ type: 'bigint'})
+      @Column({ type: 'int'})
       customer_id: number;
 }
