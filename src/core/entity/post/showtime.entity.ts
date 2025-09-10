@@ -19,6 +19,6 @@ export class ShowtimeEntity extends BaseEntity{
       @Column({type:'timestamp'})
       end_time:Date
 
-        @Column({ type: 'boolean',})
+      @Column({ type: 'boolean',default:true})
       is_active: boolean;
 }

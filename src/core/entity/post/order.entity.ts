@@ -16,6 +16,6 @@ export class OrderEntity extends BaseEntity{
       @Column({ type: 'int'})
       ticket_id: number;
 
-      @Column({ type: 'boolean'})
+      @Column({ type: 'boolean',default:false})
       status: boolean;
 }

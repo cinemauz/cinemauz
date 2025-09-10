@@ -19,6 +19,6 @@ export class CustomerEntity extends BaseEntity{
       @Column({ type: 'boolean', default: true })
       is_active: boolean;
 
-      @Column({ type: 'int', default:0})
-      balance: boolean;
+      @Column({ type: 'decimal', default:0})
+      balance: number;
 }

@@ -12,5 +12,5 @@ export class PaymentEntity extends BaseEntity {
     status: boolean
 
     @Column({ type: 'int' })
-    customer_id: number;
+    order_id: number;
 }
