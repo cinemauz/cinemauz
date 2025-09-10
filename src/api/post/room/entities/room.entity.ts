@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Showtime } from '../../showtime/entities/showtime.entity';
+// import { Showtime } from '../../showtime/entities/showtime.entity';
 
 @Entity('rooms')
 export class Room {
