@@ -23,19 +23,19 @@ export class RoomController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get room by id' })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id:number) {
     return this.roomService.findOneById(id);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update room by id' })
-  update(@Param('id') id: string, @Body() dto: UpdateRoomDto) {
+  update(@Param('id') id:number, @Body() dto: UpdateRoomDto) {
     return this.roomService.update(id, dto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete room by id' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id:number) {
     return this.roomService.remove(id);
   }
 }

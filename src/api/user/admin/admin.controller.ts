@@ -49,19 +49,19 @@ export class AdminController {
 
   // ================================= GET ONE =================================
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.adminService.findOneById(id);
+  findOne(@Param('id') id:number) {
+    return this.adminService.findOneById(+id);
   }
 
   // ================================= UPDATE =================================
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
-    return this.adminService.update(id, updateAdminDto);
+  update(@Param('id') id:number, @Body() updateAdminDto: UpdateAdminDto) {
+    return this.adminService.update(+id, updateAdminDto);
   }
 
   // ================================= DELETE =================================
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.adminService.remove(id);
+  remove(@Param('id') id:number) {
+    return this.adminService.remove(+id);
   }
 }

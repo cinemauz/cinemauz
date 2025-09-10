@@ -50,7 +50,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
 
   // ============================ FIND BY ID ============================
   async findOneById(
-    id: string,
+    id:number,
     options?: IFindOption<Entity>,
   ): Promise<ISuccessRes> {
     const data = await this.baseRepo.findOne({
@@ -65,7 +65,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ UPDATE ============================
-  async update(id: string, dto: UpdateDto): Promise<ISuccessRes> {
+  async update(id:number, dto: UpdateDto): Promise<ISuccessRes> {
     await this.findOneById(id);
     await this.baseRepo.update(id, dto as QueryDeepPartialEntity<Entity>);
     const data = await this.baseRepo.findOne({ where: { id: id as any } });
@@ -76,7 +76,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ DELETE ============================
-  async remove(id: string): Promise<ISuccessRes> {
+  async remove(id:number): Promise<ISuccessRes> {
     await this.findOneById(id);
     await this.baseRepo.delete(id);
     return successRes({});

@@ -45,7 +45,7 @@ export class AdminService
     return successRes(data);
   }
   // ================================ UPDATE ADMIN ================================
-  updateAdmin(id: string, updateAdminDto: UpdateAdminDto) {
+  updateAdmin(id:number, updateAdminDto: UpdateAdminDto) {
     const {username,}=updateAdminDto
   }
   // ================================ ON MODULE INIT ================================

@@ -31,7 +31,7 @@ export class OrderService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     try {
       const order = await this.orderRepository.findOne({
         where: { id },
@@ -44,7 +44,7 @@ export class OrderService {
     }
   }
 
-  async update(id: string, dto: UpdateOrderDto) {
+  async update(id: number, dto: UpdateOrderDto) {
     // try {
     //   await this.orderRepository.update(id, dto);
     //   const updated = await this.orderRepository.findOne({ where: { id } });
@@ -55,7 +55,7 @@ export class OrderService {
     // }
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     try {
       const result = await this.orderRepository.delete(id);
       if (result.affected === 0) {
