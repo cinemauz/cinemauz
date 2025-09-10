@@ -1,49 +1,49 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsBoolean, IsInt, IsOptional } from 'class-validator';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { OrderService } from './order.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
-export class CreateOrderDto {
-  // ------------------------------ QUANTITY ------------------------------
-  @ApiProperty({
-    description: 'Buyurtma miqdori',
-    example: 2,
-  })
-  @IsInt()
-  @IsNotEmpty()
-  quantity: number;
+@ApiTags('Orders')
+@Controller('orders')
+export class OrderController {
+  constructor(private readonly orderService: OrderService) {}
 
-  // ------------------------------ CUSTOMER ID ------------------------------
-  @ApiProperty({
-    description: 'Mijoz ID',
-    example: 1,
-  })
-  @IsInt()
-  @IsNotEmpty()
-  customer_id: number;
+  @Post()
+  @ApiOperation({ summary: 'Create a new order' })
+  create(@Body() dto: CreateOrderDto) {
+    return this.orderService.create(dto);
+  }
 
-  // ------------------------------ TICKET ID ------------------------------
-  @ApiProperty({
-    description: 'Bilet ID',
-    example: 10,
-  })
-  @IsInt()
-  @IsNotEmpty()
-  ticket_id: number;
+  @Get()
+  @ApiOperation({ summary: 'Get all orders' })
+  findAll() {
+    return this.orderService.findAll();
+  }
 
-  // ------------------------------ STATUS ------------------------------
-  @ApiPropertyOptional({
-    description: 'Buyurtma holati (true = tasdiqlangan, false = kutilmoqda)',
-    example: true,
-  })
-  @IsBoolean()
-  @IsOptional()
-  status?: boolean;
+  @Get(':id')
+  @ApiOperation({ summary: 'Get order by id' })
+  findOne(@Param('id') id: number) {
+    return this.orderService.findOne(+id);
+  }
 
-  // ------------------------------ TOTAL PRICE ------------------------------
-  @ApiPropertyOptional({
-    description: 'Buyurtma umumiy narxi',
-    example: 49.99,
-  })
-  @IsNumber()
-  @IsOptional()
-  total_price: number;
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update order by id' })
+  update(@Param('id') id: number, @Body() dto: UpdateOrderDto) {
+    return this.orderService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete order by id' })
+  remove(@Param('id') id: number) {
+    return this.orderService.remove(id);
+  }
 }
