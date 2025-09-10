@@ -1,18 +1,24 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID, IsNumber, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
 export class CreateOrderDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsUUID()
-  customer_id: string;
 
-  @ApiProperty()
+  @IsInt()
   @IsNotEmpty()
-  @IsNumber()
-  total_price: number;
+  quantity: number;
 
-  @ApiProperty({ default: false })
+  @IsInt()
+  @IsNotEmpty()
+  customer_id: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  ticket_id: number;
+
   @IsBoolean()
-  status: boolean;
+  @IsOptional()
+  status?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  total_price: number
 }

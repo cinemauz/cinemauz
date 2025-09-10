@@ -18,4 +18,7 @@ export class AdminEntity extends BaseEntity {
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
+
+  @Column({ type: 'decimal', default: 0 })
+  balance: number;
 }

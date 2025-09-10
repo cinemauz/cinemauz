@@ -10,9 +10,9 @@ export class ReviewEntity extends BaseEntity {
     @Column({ type: 'int' })
     rating: number
 
-    @Column({ type: 'varchar' })
-    customer_id: string;
+    @Column({ type: 'int' })
+    customer_id: number;
 
-    @Column({ type: 'varchar' })
-    movie_id: string;
+    @Column({ type: 'int' })
+    movie_id: number;
 }
