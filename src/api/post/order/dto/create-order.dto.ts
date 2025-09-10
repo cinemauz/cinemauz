@@ -1,18 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID, IsNumber, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateOrderDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsUUID()
-  customer_id: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ example: 1, description: 'Customer ID' })
   @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
+  customerId: number;
+
+  @ApiProperty({ example: 2, description: 'Ticket ID' })
+  @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
+  ticketId: number;
+
+  @ApiProperty({ example: 3, description: 'Quantity of tickets' })
+  @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
+  quantity: number;
+
+  @ApiProperty({ example: 250.5, description: 'Total price of the order' })
+  @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
   total_price: number;
 
-  @ApiProperty({ default: false })
+  @ApiProperty({ example: true, description: 'Order status', required: false })
   @IsBoolean()
-  status: boolean;
+  @Type(() => Boolean)
+  status?: boolean;
 }

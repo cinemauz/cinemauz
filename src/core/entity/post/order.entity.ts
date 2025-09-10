@@ -1,21 +1,30 @@
-import { BaseEntity } from "src/common/database/base.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity } from 'src/common/database/base.entity';
+import { CustomerEntity } from '../users/customer.entity';
+import { TicketEntity } from './ticket.entity';
 
-@Entity('order')
-export class OrderEntity extends BaseEntity{
+@Entity('orders')
+export class OrderEntity extends BaseEntity {
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  total_price: number;
 
-      @Column({ type: 'bigint'})
-      total_price: number;
+  @Column({ type: 'int' })
+  quantity: number;
 
-      @Column({ type: 'bigint'})
-      quantity: number;
+  @Column({ type: 'boolean', default: true })
+  status: boolean;
 
-      @Column({ type: 'bigint'})
-      customer_id: number;
+  @Column({ name: 'customer_id' })
+  customerId: string;
 
-      @Column({ type: 'bigint'})
-      ticket_id: number;
+  @Column({ name: 'ticket_id' })
+  ticketId: string;
 
-      @Column({ type: 'boolean'})
-      status: boolean;
+  @ManyToOne(() => CustomerEntity, (customer) => customer.orders, { eager: true })
+  @JoinColumn({ name: 'customer_id' })
+  customer: CustomerEntity;
+
+  @ManyToOne(() => TicketEntity, (ticket) => ticket.orders, { eager: true })
+  @JoinColumn({ name: 'ticket_id' })
+  ticket: TicketEntity;
 }

@@ -1,18 +1,17 @@
-import { BaseEntity } from "src/common/database/base.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { BaseEntity } from 'src/common/database/base.entity';
+import { CustomerEntity } from 'src/core/entity/users/customer.entity';
 
-@Entity('review')
-export class ReviewEntity extends BaseEntity {
-    
-    @Column({ type: 'text' })
-    comment: string
+@Entity('reviews')
+export class Review extends BaseEntity {
+  @Column({ type: 'text' })
+  comment: string;
 
-    @Column({ type: 'int' })
-    rating: number
+  @Column({ type: 'int', default: 5 })
+  rating: number;
 
-    @Column({ type: 'varchar' })
-    customer_id: string;
+  @ManyToOne(() => CustomerEntity, (customer) => customer.id)
+  customer: CustomerEntity;
 
-    @Column({ type: 'varchar' })
-    movie_id: string;
+  
 }

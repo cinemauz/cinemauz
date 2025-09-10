@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -10,7 +10,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new order' })
+  @ApiOperation({ summary: 'Create new order' })
   create(@Body() dto: CreateOrderDto) {
     return this.orderService.create(dto);
   }
@@ -18,23 +18,23 @@ export class OrderController {
   @Get()
   @ApiOperation({ summary: 'Get all orders' })
   findAll() {
-    return this.orderService.findAll();
+    return this.orderService.findAll({ relations: ['customer', 'ticket'] });
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get order by id' })
+  @ApiOperation({ summary: 'Get order by ID' })
   findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+    return this.orderService.findOneById(id, { relations: ['customer', 'ticket'] });
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update order by id' })
+  @ApiOperation({ summary: 'Update order' })
   update(@Param('id') id: string, @Body() dto: UpdateOrderDto) {
     return this.orderService.update(id, dto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete order by id' })
+  @ApiOperation({ summary: 'Delete order' })
   remove(@Param('id') id: string) {
     return this.orderService.remove(id);
   }
