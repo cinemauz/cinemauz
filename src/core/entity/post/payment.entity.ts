@@ -1,18 +1,20 @@
-import { BaseEntity } from "src/common/database/base.entity";
-import { Column, Entity } from "typeorm";
+import { BaseEntity } from 'src/common/database/base.entity';
+import { Payment } from 'src/common/enum/payment';
+import { Column, Entity } from 'typeorm';
 
 @Entity('payment')
 export class PaymentEntity extends BaseEntity {
-    
-    @Column({ type: 'bigint' })
-    total_price: number
+  @Column({ type: 'decimal' })
+  total_price: number;
 
-    @Column({ type: 'boolean' })
-    status: boolean
+  @Column({
+    type: 'enum',
+    enum: Payment,
+    default: Payment.PENDING,
+    nullable: true,
+  })
+  status: boolean;
 
-    @Column({ type: 'varchar' })
-    customer_id: string;
-
-    @Column({ type: 'varchar' })
-    order_id: string;
+  @Column({ type: 'int' })
+  order_id: number;
 }

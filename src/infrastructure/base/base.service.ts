@@ -5,7 +5,7 @@ import {
   ISuccessRes,
 } from '../response/success.interface';
 import { successRes } from '../response/succesRes';
-import { HttpException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { RepositoryPager } from '../pagination';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 
@@ -43,14 +43,16 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
       where: options?.where,
     });
     if (!data) {
-      throw new NotFoundException(`not found `);
+      throw new NotFoundException(
+        `not found on ${String(this.baseRepo.metadata.name).split('Entity')[0]}`,
+      );
     }
     return successRes(data);
   }
 
   // ============================ FIND BY ID ============================
   async findOneById(
-    id: string,
+    id: number,
     options?: IFindOption<Entity>,
   ): Promise<ISuccessRes> {
     const data = await this.baseRepo.findOne({
@@ -59,24 +61,28 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
       where: { id, ...(options?.where as Entity) },
     });
     if (!data) {
-      throw new NotFoundException(`not found this id => ${id}`);
+      throw new NotFoundException(
+        `not found this id => ${id} on ${String(this.baseRepo.metadata.name).split('Entity')[0]}`,
+      );
     }
     return successRes(data);
   }
 
   // ============================ UPDATE ============================
-  async update(id: string, dto: UpdateDto): Promise<ISuccessRes> {
+  async update(id: number, dto: UpdateDto): Promise<ISuccessRes> {
     await this.findOneById(id);
     await this.baseRepo.update(id, dto as QueryDeepPartialEntity<Entity>);
     const data = await this.baseRepo.findOne({ where: { id: id as any } });
     if (!data) {
-      throw new NotFoundException(`not found this id => ${id}`);
+      throw new NotFoundException(
+        `not found this id => ${id} on ${this.baseRepo}`,
+      );
     }
     return successRes(data);
   }
 
   // ============================ DELETE ============================
-  async remove(id: string): Promise<ISuccessRes> {
+  async remove(id: number): Promise<ISuccessRes> {
     await this.findOneById(id);
     await this.baseRepo.delete(id);
     return successRes({});

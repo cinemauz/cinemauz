@@ -8,7 +8,16 @@ export class TicketEntity extends BaseEntity {
   @Column()
   seat_number: string;
 
-  @ManyToOne(() => RoomEntity, (room) => room.tickets)
+  @Column({ type: 'decimal' })
+  price: number;
+
+  @Column({ type: 'int' })
+  showtime_id: number;
+
+  @Column({ type: 'boolean', default: true })
+  status: boolean;
+
+  @ManyToOne(() => RoomEntity, (room) => room.tickets, { eager: true })
   @JoinColumn({ name: 'room_id' })
   room: RoomEntity;
 

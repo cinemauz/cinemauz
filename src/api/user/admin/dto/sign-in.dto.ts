@@ -8,18 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateAdminDto {
-  // --------------------------------------- NAME ---------------------------------------
-  @ApiProperty({
-    description: 'Adminning ismi',
-    example: 'John Doe',
-    minLength: 3,
-  })
-  @MinLength(3)
-  @IsString()
-  @IsNotEmpty()
-  name?: string;
-
+export class SignInAdminDto {
   // --------------------------------------- USERNAME ---------------------------------------
   @ApiProperty({
     description: 'Adminning username',
@@ -39,13 +28,4 @@ export class CreateAdminDto {
   @IsStrongPassword()
   @IsNotEmpty()
   password: string;
-
-  // --------------------------------------- IS ACTIVE ---------------------------------------
-  @ApiPropertyOptional({
-    description: 'Admin faol (true = mavjud, false = sotilgan)',
-    example: true,
-  })
-  @IsBoolean()
-  @IsOptional()
-  is_active?: boolean;
 }

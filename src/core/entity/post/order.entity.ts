@@ -14,10 +14,10 @@ export class OrderEntity extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   status: boolean;
 
-  @Column({ name: 'customer_id' })
+  @Column({ name: 'customer_id', type: 'uuid' })
   customerId: string;
 
-  @Column({ name: 'ticket_id' })
+  @Column({ name: 'ticket_id', type: 'uuid' })
   ticketId: string;
 
   @ManyToOne(() => CustomerEntity, (customer) => customer.orders, { eager: true })

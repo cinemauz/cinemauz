@@ -12,8 +12,9 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwt: TokenService) {}
-// ================================== NEW TOKEN ==================================
+  constructor(private readonly jwt: TokenService) { }
+  
+  // ================================== NEW TOKEN ==================================
   async newToken(repository: Repository<any>, token: string) {
     const data: any = await this.jwt.verifyToken(
       token,
@@ -37,20 +38,40 @@ export class AuthService {
     return successRes({ token: accessToken });
   }
 
+  // ================================== SIGN OUT ==================================
   async signOut(repository: Repository<any>, token: string, res: Response, tokenKey: string) {
-     const data: any = await this.jwt.verifyToken(
-       token,
-       config.TOKEN.REFRESH_KEY,
-     );
-     if (!data) {
-       throw new UnauthorizedException('Refresh token expired');
-     }
+    const data: any = await this.jwt.verifyToken(
+      token,
+      config.TOKEN.REFRESH_KEY,
+    );
+    if (!data) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
 
-     const user = await repository.findOne({ where: { id: data?.id } });
-     if (!user) {
-       throw new ForbiddenException('Forbiden user');
-     }
+    const user = await repository.findOne({ where: { id: data?.id } });
+    if (!user) {
+      throw new ForbiddenException('Forbiden user');
+    }
     res.clearCookie(tokenKey)
     return successRes({})
+  }
+
+  // ================================== UPDATE PASSWORD ==================================
+  async UpdatePassword(oldPassword: string, newPassword: string, id: number) {
+
+  }
+
+  // ================================== UPDATE PASSWORD EMAIL ==================================
+  async ForgetPassword(email: string) {
+
+  }
+
+  // ================================== CONFIRM PASSWORD ==================================
+  async ConfirmOTP(otpPassword: number) {
+  }
+
+  // ================================== CONFIRM OTP AND UPDATE PASSWORD ==================================
+  async UpdateNewPassword() {
+
   }
 }

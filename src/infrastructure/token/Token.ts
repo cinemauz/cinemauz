@@ -25,7 +25,7 @@ export class TokenService {
     res: Response,
     key: string,
     value: string,
-    time: number,
+    time: number = 20,
   ): Promise<void> {
     res.cookie(key, value, {
       httpOnly: true,

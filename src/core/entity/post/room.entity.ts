@@ -4,7 +4,7 @@ import { TicketEntity } from './ticket.entity';
 
 @Entity('rooms')
 export class RoomEntity extends BaseEntity {
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   name: string;
 
   @Column({ type: 'varchar', length: 200 })

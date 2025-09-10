@@ -1,34 +1,49 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 1, description: 'Customer ID' })
-  @IsNumber()
-  @Type(() => Number)
-  @IsNotEmpty()
-  customerId: number;
-
-  @ApiProperty({ example: 2, description: 'Ticket ID' })
-  @IsNumber()
-  @Type(() => Number)
-  @IsNotEmpty()
-  ticketId: number;
-
-  @ApiProperty({ example: 3, description: 'Quantity of tickets' })
-  @IsNumber()
-  @Type(() => Number)
+  // ------------------------------ QUANTITY ------------------------------
+  @ApiProperty({
+    description: 'Buyurtma miqdori',
+    example: 2,
+  })
+  @IsInt()
   @IsNotEmpty()
   quantity: number;
 
-  @ApiProperty({ example: 250.5, description: 'Total price of the order' })
-  @IsNumber()
-  @Type(() => Number)
+  // ------------------------------ CUSTOMER ID ------------------------------
+  @ApiProperty({
+    description: 'Mijoz ID',
+    example: 1,
+  })
+  @IsInt()
   @IsNotEmpty()
-  total_price: number;
+  customer_id: number;
 
-  @ApiProperty({ example: true, description: 'Order status', required: false })
+  // ------------------------------ TICKET ID ------------------------------
+  @ApiProperty({
+    description: 'Bilet ID',
+    example: 10,
+  })
+  @IsInt()
+  @IsNotEmpty()
+  ticket_id: number;
+
+  // ------------------------------ STATUS ------------------------------
+  @ApiPropertyOptional({
+    description: 'Buyurtma holati (true = tasdiqlangan, false = kutilmoqda)',
+    example: true,
+  })
   @IsBoolean()
-  @Type(() => Boolean)
+  @IsOptional()
   status?: boolean;
+
+  // ------------------------------ TOTAL PRICE ------------------------------
+  @ApiPropertyOptional({
+    description: 'Buyurtma umumiy narxi',
+    example: 49.99,
+  })
+  @IsNumber()
+  @IsOptional()
+  total_price: number;
 }

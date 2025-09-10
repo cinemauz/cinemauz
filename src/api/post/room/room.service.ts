@@ -10,8 +10,8 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 export class RoomService extends BaseService<CreateRoomDto, UpdateRoomDto, RoomEntity> {
   constructor(
     @InjectRepository(RoomEntity)
-    private readonly roomRepo: Repository<RoomEntity>,
+    private readonly roomRepository: Repository<RoomEntity>,
   ) {
-    super(roomRepo);
+    super(roomRepository);
   }
 }

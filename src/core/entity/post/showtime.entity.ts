@@ -4,10 +4,10 @@ import { Column, Entity } from "typeorm";
 @Entity('showtime')
 export class ShowtimeEntity extends BaseEntity{
 
-      @Column({ type: 'bigint',})
+      @Column({ type: 'int',})
       movie_id: number;
 
-      @Column({ type: 'bigint',})
+      @Column({ type: 'int',})
       stock_quantity: number;
 
       @Column({ type: 'int',})
@@ -18,4 +18,7 @@ export class ShowtimeEntity extends BaseEntity{
 
       @Column({type:'timestamp'})
       end_time:Date
+
+      @Column({ type: 'boolean',default:true})
+      is_active: boolean;
 }
