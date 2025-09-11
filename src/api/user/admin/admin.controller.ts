@@ -123,12 +123,12 @@ export class AdminController {
     SwaggerApi.ApiSuccessResponse([adminData,adminData]),
   )
   // GUARD
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @AccessRoles(Roles.SUPERADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Get('page')
-  // @ApiBearerAuth()
+  @ApiBearerAuth()
   findAllWithPagenation(
     @Query() queryDto:QueryPagination) {
       const {query,page,limit}=queryDto
@@ -140,7 +140,7 @@ export class AdminController {
         select:{
           id:true,
           username:true,
-          is_active:true
+          is_active:true,
         },
         skip:page,
         take:limit
