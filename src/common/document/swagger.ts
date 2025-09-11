@@ -1,5 +1,5 @@
 export const adminData = {
-  id: 'bf14cea0-a9af-4abc-bad4-1b36302d0d56',
+  id: '1',
   createdAt: '2025-09-10T15:06:07.283Z',
   updatedAt: '2025-09-10T15:06:07.283Z',
   name: 'John Doe',

@@ -1,4 +1,5 @@
 import {
+  Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -16,4 +17,8 @@ export abstract class BaseEntity {
   // ----------------- UPDATE AT -----------------
   @UpdateDateColumn()
   updatedAt: Date;
+
+    // ----------------- IS DELETED -----------------
+  @Column({type:'boolean', nullable:true,default:false})
+  is_deleted:boolean
 }

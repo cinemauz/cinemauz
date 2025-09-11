@@ -10,6 +10,7 @@ import {
   UseGuards,
   Req,
   Res,
+  Query,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -33,6 +34,8 @@ import type { IToken } from 'src/infrastructure/token/token.interface';
 import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
 import { AuthService } from '../auth/auth.service';
 import type { Response } from 'express'
+import { QueryPagination } from 'src/common/dto/query.pagenation';
+import { ILike } from 'typeorm';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -70,7 +73,7 @@ export class AdminController {
   // SWAGGER
   @ApiOperation({ summary: 'Sign In' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(tokenRes, HttpStatus.OK, 'Success'),
+    SwaggerApi.ApiSuccessResponse(tokenRes),
   )
 
   // ENDPOINT
@@ -85,7 +88,7 @@ export class AdminController {
   // ================================= NEW TOKEN =================================
   @ApiOperation({ summary: 'New Token' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(tokenRes, HttpStatus.OK, 'Success'),
+    SwaggerApi.ApiSuccessResponse(tokenRes),
   )
 
   // ENDPOINT
@@ -99,7 +102,7 @@ export class AdminController {
   // SWAGGER
   @ApiOperation({ summary: 'Sign out' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse({}, HttpStatus.OK, 'Success'),
+    SwaggerApi.ApiSuccessResponse({}),
   )
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -114,13 +117,41 @@ export class AdminController {
     return this.authService.signOut(this.adminService.getRepository, token, res, 'adminToken')
   }
   // ================================= GET ALL PAGENATION =================================
+  // SWAGGER
+  @ApiOperation({ summary: 'Find All Pagenation' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse([adminData,adminData]),
+  )
+  // GUARD
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @AccessRoles(Roles.SUPERADMIN)
 
+  // ENDPOINT
+  @Get('page')
+  // @ApiBearerAuth()
+  findAllWithPagenation(
+    @Query() queryDto:QueryPagination) {
+      const {query,page,limit}=queryDto
+      const where=query?
+      {username:ILike(`%${query}%`),role:Roles.ADMIN,is_deleted:false}:
+      {role:Roles.ADMIN,is_deleted:false}
+      return this.adminService.findAllWithPagination({
+        where,
+        select:{
+          id:true,
+          username:true,
+          is_active:true
+        },
+        skip:page,
+        take:limit
+      })
+  }
   // ================================= GET ALL =================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Get All Admin' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(adminData, HttpStatus.OK, 'Success'),
+    SwaggerApi.ApiSuccessResponse([adminData,adminData]),
   )
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -140,7 +171,7 @@ export class AdminController {
   // SWAGGER
   @ApiOperation({ summary: 'Get one' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(adminData, HttpStatus.OK, 'Success'),
+    SwaggerApi.ApiSuccessResponse(adminData),
   )
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -161,7 +192,7 @@ export class AdminController {
   @ApiOperation({ summary: 'Update Admin' })
   @ApiParam(SwaggerApi.ApiParam())
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(adminData, HttpStatus.OK, 'Success'),
+    SwaggerApi.ApiSuccessResponse(adminData),
   )
 
   // GUARD
@@ -185,7 +216,7 @@ export class AdminController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Delete Admin' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse({}, HttpStatus.OK, 'Success'))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
