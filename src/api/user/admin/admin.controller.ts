@@ -17,6 +17,7 @@ import { UpdateAdminDto } from './dto/update-admin.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -26,13 +27,20 @@ import { AuthGuard } from 'src/common/guard/auth.guard';
 import { RolesGuard } from 'src/common/guard/role.guard';
 import { AccessRoles } from 'src/common/decorator/roles.decorator';
 import { Roles } from 'src/common/enum/Roles';
-import type { Response } from 'express';
 import { SignInAdminDto } from './dto/sign-in.dto';
+import { GetRequestUser } from 'src/common/decorator/get-request.decorator';
+import type { IToken } from 'src/infrastructure/token/token.interface';
+import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
+import { AuthService } from '../auth/auth.service';
+import type { Response } from 'express'
 
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService,
+    private readonly authService: AuthService
+  ) { }
+
   // ================================= CREATED =================================
 
   // SWAGGER
@@ -56,6 +64,7 @@ export class AdminController {
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminService.createAdmin(createAdminDto);
   }
+
   // ================================= SIGN IN =================================
 
   // SWAGGER
@@ -72,6 +81,40 @@ export class AdminController {
   ) {
     return this.adminService.signIn(signInDto, res);
   }
+
+  // ================================= NEW TOKEN =================================
+  @ApiOperation({ summary: 'New Token' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse(tokenRes, HttpStatus.OK, 'Success'),
+  )
+
+  // ENDPOINT
+  @Post('newtoken')
+  newToken(@CookieGetter('adminToken') token: string) {
+    return this.authService.newToken(this.adminService.getRepository, token)
+  }
+
+  // ================================= SIGN OUT =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Sign out' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse({}, HttpStatus.OK, 'Success'),
+  )
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+
+  // ENDPOINT
+  @Post('signout')
+  @ApiBearerAuth()
+  signOut(
+    @CookieGetter('adminToken') token: string,
+    @Res({ passthrough: true }) res: Response) {
+    return this.authService.signOut(this.adminService.getRepository, token, res, 'adminToken')
+  }
+  // ================================= GET ALL PAGENATION =================================
+
   // ================================= GET ALL =================================
 
   // SWAGGER
@@ -116,12 +159,14 @@ export class AdminController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Update Admin' })
+  @ApiParam(SwaggerApi.ApiParam())
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(adminData, HttpStatus.OK, 'Success'),
   )
+
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN)
+  @AccessRoles(Roles.SUPERADMIN, 'ID')
 
   // ENDPOINT
   @Patch(':id')
@@ -129,13 +174,11 @@ export class AdminController {
 
   // UPDATE
   update(
+    @GetRequestUser('user') user: IToken,
     @Param('id') id: number,
     @Body() updateAdminDto: UpdateAdminDto,
-    @Req() req: Request,
   ) {
-    console.log(req);
-
-    return this.adminService.updateAdmin(+id, updateAdminDto);
+    return this.adminService.updateAdmin(+id, updateAdminDto, user);
   }
 
   // ================================= DELETE =================================
@@ -157,7 +200,3 @@ export class AdminController {
     return this.adminService.remove(+id);
   }
 }
-
-// ================================= SIGN OUT =================================
-
-// ================================= NEW TOKEN =================================

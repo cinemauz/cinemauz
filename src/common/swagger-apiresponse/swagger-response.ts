@@ -39,4 +39,18 @@ export class SwaggerApi {
       },
     };
   }
+
+  static ApiParam(
+    name: string='id',
+    type: string = 'string',
+    example: number = 1,
+    description:string='id of admin'
+  ) {
+    return {
+     name,
+     type,
+     example,
+     description
+    };
+  }
 }

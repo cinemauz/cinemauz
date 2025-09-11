@@ -16,6 +16,8 @@ export class AuthService {
   
   // ================================== NEW TOKEN ==================================
   async newToken(repository: Repository<any>, token: string) {
+
+    // check refresh token
     const data: any = await this.jwt.verifyToken(
       token,
       config.TOKEN.REFRESH_KEY,
@@ -24,22 +26,28 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token expired');
     }
 
+    // check user have
     const user = await repository.findOne({ where: { id: data?.id } });
     if (!user) {
       throw new ForbiddenException('Forbiden user');
     }
 
+    // give payload
     const payload: IToken = {
       id: user.id,
       is_active: user.is_active,
       role: user.role,
     };
+
+    // access token
     const accessToken = await this.jwt.accessToken(payload);
     return successRes({ token: accessToken });
   }
 
   // ================================== SIGN OUT ==================================
   async signOut(repository: Repository<any>, token: string, res: Response, tokenKey: string) {
+
+    // check refresh token
     const data: any = await this.jwt.verifyToken(
       token,
       config.TOKEN.REFRESH_KEY,
@@ -48,10 +56,13 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token expired');
     }
 
+    // check user has
     const user = await repository.findOne({ where: { id: data?.id } });
     if (!user) {
       throw new ForbiddenException('Forbiden user');
     }
+
+    // clear token 
     res.clearCookie(tokenKey)
     return successRes({})
   }

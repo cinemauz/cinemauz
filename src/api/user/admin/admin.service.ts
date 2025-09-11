@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -24,8 +25,7 @@ import { SignInAdminDto } from './dto/sign-in.dto';
 @Injectable()
 export class AdminService
   extends BaseService<CreateAdminDto, UpdateAdminDto, AdminEntity>
-  implements OnModuleInit
-{
+  implements OnModuleInit {
   constructor(
     @InjectRepository(AdminEntity)
     private readonly adminRepo: Repository<AdminEntity>,
@@ -37,19 +37,23 @@ export class AdminService
   // ================================ ON MODULE INIT ================================
   async onModuleInit(): Promise<void> {
     try {
+      // check Role
       const exist = await this.adminRepo.findOne({
         where: { role: Roles.SUPERADMIN },
       });
       if (!exist) {
+        // hashed password
         const hashed_password = await this.crypto.encrypt(
           config.SUPERADMIN.PASSWORD,
         );
+        //created Super Admin
         const superAdmin = this.adminRepo.create({
           name: config.SUPERADMIN.NAME,
           username: config.SUPERADMIN.USERNAME,
           hashed_password,
           role: Roles.SUPERADMIN,
         });
+        // save
         await this.adminRepo.save(superAdmin);
         console.log(`${Roles.SUPERADMIN} is created`);
       }
@@ -57,42 +61,68 @@ export class AdminService
       throw new InternalServerErrorException('Error on created super admin');
     }
   }
+
   // ================================ CREATE ADMIN ================================
   async createAdmin(createAdminDto: CreateAdminDto): Promise<ISuccessRes> {
     const { username, password, ...rest } = createAdminDto;
+
+    // check username
     const existName = await this.adminRepo.findOne({ where: { username } });
     if (existName) {
       throw new ConflictException(
         `this user => ${username} already exist on Admin`,
       );
     }
+
+    // enrypt password
     const hashed_password = await this.crypto.encrypt(password);
+
+    // save Admin
     const data = this.adminRepo.create({ ...rest, username, hashed_password });
     await this.adminRepo.save(data);
     return successRes(data);
   }
+
   // ================================ UPDATE ADMIN ================================
-  async updateAdmin(id: number, updateAdminDto: UpdateAdminDto, req?: Request) {
-    // console.log(req.user);
+  async updateAdmin(id: number, updateAdminDto: UpdateAdminDto, user: IToken) {
 
-    if (id == 1) {
-      throw new ConflictException(`You cant update this ${id} on Admin`);
+    // dont update Super Admin
+    if (id == config.SUPERADMIN.ID) {
+      throw new ConflictException(`You cant update this ${id} on SUPERADMIN`);
     }
+    // check admin
     const admin = await this.adminRepo.findOne({ where: { id } });
+    if (!admin) {
+      throw new NotFoundException(`not found this id => ${id} on Admin`)
+    }
 
-    const { username, password, is_active, ...rest } = updateAdminDto;
+    // check username
+    const { username, password, is_active } = updateAdminDto
     if (username) {
-      const user = await this.adminRepo.findOne({ where: { username } });
-      if (user) {
-        throw new ConflictException(
-          `${username} already exist on ${String(this.adminRepo.metadata.name).split('Entity')[0]}`,
-        );
+      const existName = await this.adminRepo.findOne({ where: { username } })
+      if (existName && existName.id != id) {
+        throw new ConflictException(`This username => ${username} already exist`)
       }
     }
-    if (password) {
+
+    // check Super Admin Role
+    let hashed_password = admin.hashed_password
+    let active = admin.is_active
+    if (user.role == Roles.SUPERADMIN) {
+
+      // check password
+      if (password) {
+        hashed_password = await this.crypto.encrypt(password)
+      }
+      // check is active
+      if (is_active != null) {
+        active = is_active
+      }
     }
-    const data = await this.adminRepo.update(id, updateAdminDto);
-    return successRes(data);
+
+    // update Admin
+    await this.adminRepo.update({ id }, { username, hashed_password, is_active: active })
+    return await this.findOneById(id);
   }
 
   // ================================ SIGN IN ================================
@@ -100,11 +130,13 @@ export class AdminService
   async signIn(signInDto: SignInAdminDto, res: Response) {
     const { username, password } = signInDto;
 
+    // check username
     const admin = await this.adminRepo.findOne({ where: { username } });
     if (!admin) {
       throw new UnauthorizedException('Username or Password is incorect');
     }
 
+    // check password
     const checkPass = await this.crypto.decrypt(
       password,
       admin?.hashed_password as string,
@@ -114,16 +146,22 @@ export class AdminService
       throw new UnauthorizedException('Username or Password is incorect');
     }
 
+    // give payload
     const payload: IToken = {
       id: Number(admin.id),
       is_active: admin.is_active,
       role: admin.role,
     };
 
+    // access token
     const accessToken = await this.tokenService.accessToken(payload);
+
+    // refresh token
     const refreshToken = await this.tokenService.refreshToken(payload);
+
+    // write cookie
     await this.tokenService.writeCookie(res, 'adminToken', refreshToken, 15);
-    
+
     return successRes({ token: accessToken });
   }
 }
