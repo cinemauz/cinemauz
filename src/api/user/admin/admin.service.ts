@@ -115,7 +115,7 @@ export class AdminService
     }
 
     const payload: IToken = {
-      id: admin.id,
+      id: Number(admin.id),
       is_active: admin.is_active,
       role: admin.role,
     };

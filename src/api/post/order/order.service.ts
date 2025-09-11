@@ -21,7 +21,7 @@ export class OrderService {
     // }
   }
 
-  async findAll(){
+  async findAll() {
     try {
       return await this.orderRepository.find({
         relations: ['customer', 'tickets', 'payments'],
