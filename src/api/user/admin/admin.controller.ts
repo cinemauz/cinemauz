@@ -11,6 +11,7 @@ import {
   Req,
   Res,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -23,7 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SwaggerApi } from 'src/common/swagger-apiresponse/swagger-response';
-import { adminData, tokenRes } from 'src/common/document/swagger';
+import { adminAll, adminData, tokenRes } from 'src/common/document/swagger';
 import { AuthGuard } from 'src/common/guard/auth.guard';
 import { RolesGuard } from 'src/common/guard/role.guard';
 import { AccessRoles } from 'src/common/decorator/roles.decorator';
@@ -33,15 +34,16 @@ import { GetRequestUser } from 'src/common/decorator/get-request.decorator';
 import type { IToken } from 'src/infrastructure/token/token.interface';
 import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
 import { AuthService } from '../auth/auth.service';
-import type { Response } from 'express'
+import type { Response } from 'express';
 import { QueryPagination } from 'src/common/dto/query.pagenation';
 
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService,
-    private readonly authService: AuthService
-  ) { }
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly authService: AuthService,
+  ) {}
 
   // ================================= CREATED =================================
 
@@ -71,9 +73,7 @@ export class AdminController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Sign In' })
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(tokenRes),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(tokenRes))
 
   // ENDPOINT
   @Post('signin')
@@ -86,60 +86,58 @@ export class AdminController {
 
   // ================================= NEW TOKEN =================================
   @ApiOperation({ summary: 'New Token' })
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(tokenRes),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(tokenRes))
 
   // ENDPOINT
   @Post('newtoken')
   newToken(@CookieGetter('adminToken') token: string) {
-    return this.authService.newToken(this.adminService.getRepository, token)
+    return this.authService.newToken(this.adminService.getRepository, token);
   }
 
   // ================================= SIGN OUT =================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Sign out' })
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse({}),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
+
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+  @AccessRoles(Roles.SUPERADMIN, 'ID')
 
   // ENDPOINT
   @Post('signout')
   @ApiBearerAuth()
   signOut(
     @CookieGetter('adminToken') token: string,
-    @Res({ passthrough: true }) res: Response) {
-    return this.authService.signOut(this.adminService.getRepository, token, res, 'adminToken')
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.signOut(
+      this.adminService.getRepository,
+      token,
+      res,
+      'adminToken',
+    );
   }
   // ================================= GET ALL PAGENATION =================================
   // SWAGGER
   @ApiOperation({ summary: 'Find All Pagenation' })
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse([adminData,adminData]),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse([adminData, adminData]))
   // GUARD
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @AccessRoles(Roles.SUPERADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Get('page')
-  // @ApiBearerAuth()
-  findAllWithPagenation(
-    @Query() queryDto:QueryPagination) {
-      const {query,limit,page}=queryDto
-      return this.adminService.findAllWithPagination(query,limit,page)
+  @ApiBearerAuth()
+  findAllWithPagenation(@Query() queryDto: QueryPagination) {
+    const { query, limit, page } = queryDto;
+    return this.adminService.findAllWithPagination(query, limit, page);
   }
   // ================================= GET ALL =================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Get All Admin' })
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse([adminData,adminData]),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse([adminAll, adminAll]))
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
   @AccessRoles(Roles.SUPERADMIN)
@@ -150,26 +148,34 @@ export class AdminController {
 
   // FIND ALL
   findAll() {
-    return this.adminService.findAll();
+    return this.adminService.findAll({
+      where: { is_deleted: false, role: Roles.ADMIN },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        balance: true,
+        name: true,
+      },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   // ================================= GET ONE =================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Get one' })
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(adminData),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(adminData))
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+  @AccessRoles(Roles.SUPERADMIN, 'ID')
 
   // ENDPOINT
   @Get(':id')
   @ApiBearerAuth()
 
   // FIND ONE
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.findOneById(+id);
   }
 
@@ -178,9 +184,7 @@ export class AdminController {
   // SWAGGER
   @ApiOperation({ summary: 'Update Admin' })
   @ApiParam(SwaggerApi.ApiParam())
-  @ApiResponse(
-    SwaggerApi.ApiSuccessResponse(adminData),
-  )
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(adminData))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -193,12 +197,30 @@ export class AdminController {
   // UPDATE
   update(
     @GetRequestUser('user') user: IToken,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateAdminDto: UpdateAdminDto,
   ) {
     return this.adminService.updateAdmin(+id, updateAdminDto, user);
   }
 
+  // ================================= SOFT DELETE =================================
+  // SWAGGER
+  @ApiOperation({ summary: 'Soft delete Admin' })
+  @ApiParam(SwaggerApi.ApiParam())
+  @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN)
+
+  // ENDPOINT
+  @Patch('delete/:id')
+  @ApiBearerAuth()
+
+  // UPDATE
+  softDelete(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.softDelete(+id);
+  }
   // ================================= DELETE =================================
 
   // SWAGGER
@@ -207,14 +229,14 @@ export class AdminController {
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Delete(':id')
   @ApiBearerAuth()
 
   // DELETE
-  remove(@Param('id') id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.remove(+id);
   }
 }
