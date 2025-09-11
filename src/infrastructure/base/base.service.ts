@@ -1,16 +1,15 @@
-import { DeepPartial, ObjectLiteral, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, ILike, ObjectLiteral, Repository } from 'typeorm';
 import {
   IFindOption,
-  IResponsePagination,
   ISuccessRes,
 } from '../response/success.interface';
 import { successRes } from '../response/succesRes';
 import { NotFoundException } from '@nestjs/common';
-import { RepositoryPager } from '../pagination';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
+import { toSkipTake } from '../pagination/skip-page';
 
 export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
-  constructor(private readonly baseRepo: Repository<Entity>) {}
+  constructor(private readonly baseRepo: Repository<Entity>) { }
 
   get getRepository() {
     return this.baseRepo;
@@ -29,11 +28,35 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ FIND ALL PAGE ============================
-  async findAllWithPagination(
-    options?: IFindOption<Entity>,
-  ): Promise<IResponsePagination> {
-    return await RepositoryPager.findAll(this.getRepository, options);
+  async findAllWithPagination(query: string = '', limit: number = 10, page: number = 1) {
+    const { take, skip } = toSkipTake(page, limit)
+    const [user, count] = await this.baseRepo.findAndCount({
+      // select:{
+      //   name:true,
+      // },
+      where: {
+        username: ILike(`%${query}%`),
+        is_deleted:false
+      } as unknown as FindOptionsWhere<Entity>,
+      order: {
+        // 'createdAt': 'DESC',
+      },
+      take,
+      skip,
+    })
+    const total_page = Math.ceil(count / limit)
+    return successRes({
+      data: user,
+      mete: {
+        page,
+        total_page,
+        total_count: count,
+        hasNextPage: total_page > page
+      }
+    })
+
   }
+
 
   // ============================ FIND BY ============================
   async findOneBY(options?: IFindOption<Entity>): Promise<ISuccessRes> {

@@ -35,7 +35,6 @@ import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
 import { AuthService } from '../auth/auth.service';
 import type { Response } from 'express'
 import { QueryPagination } from 'src/common/dto/query.pagenation';
-import { ILike } from 'typeorm';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -123,28 +122,16 @@ export class AdminController {
     SwaggerApi.ApiSuccessResponse([adminData,adminData]),
   )
   // GUARD
-  @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN)
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Get('page')
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   findAllWithPagenation(
     @Query() queryDto:QueryPagination) {
-      const {query,page,limit}=queryDto
-      const where=query?
-      {username:ILike(`%${query}%`),role:Roles.ADMIN,is_deleted:false}:
-      {role:Roles.ADMIN,is_deleted:false}
-      return this.adminService.findAllWithPagination({
-        where,
-        select:{
-          id:true,
-          username:true,
-          is_active:true,
-        },
-        skip:page,
-        take:limit
-      })
+      const {query,limit,page}=queryDto
+      return this.adminService.findAllWithPagination(query,limit,page)
   }
   // ================================= GET ALL =================================
 
