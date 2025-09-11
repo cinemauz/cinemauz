@@ -48,4 +48,10 @@ export class CreateAdminDto {
   @IsBoolean()
   @IsOptional()
   is_active?: boolean;
+
+    // --------------------------------------- IS DELETED ---------------------------------------
+
+  @IsBoolean()
+  @IsOptional()
+  is_deleted?:boolean
 }

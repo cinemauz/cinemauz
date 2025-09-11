@@ -12,6 +12,7 @@ type ConfigType = {
     PASSWORD: string;
     USERNAME: string;
     NAME: string;
+    ID:number
   };
 
   TOKEN: {
@@ -41,6 +42,7 @@ export const config: ConfigType = {
     PASSWORD: String(process.env.ADMIN_PASSWORD),
     USERNAME: String(process.env.ADMIN_USERNAME),
     NAME: String(process.env.ADMIN_NAME),
+    ID:Number(process.env.ADMIN_ID)
   },
 
   TOKEN: {

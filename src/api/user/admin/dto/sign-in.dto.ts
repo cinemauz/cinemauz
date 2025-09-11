@@ -1,8 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty} from '@nestjs/swagger';
 import {
-  IsBoolean,
   IsNotEmpty,
-  IsOptional,
   IsString,
   IsStrongPassword,
   MinLength,
@@ -12,7 +10,7 @@ export class SignInAdminDto {
   // --------------------------------------- USERNAME ---------------------------------------
   @ApiProperty({
     description: 'Adminning username',
-    example: 'johndoe123',
+    example: 'admin123!@',
     minLength: 3,
   })
   @MinLength(3)
@@ -23,7 +21,7 @@ export class SignInAdminDto {
   // --------------------------------------- PASSSWORD ---------------------------------------
   @ApiProperty({
     description: 'Adminning kuchli paroli',
-    example: 'Str0ngP@ssword!',
+    example: 'SuperAdmin123!@',
   })
   @IsStrongPassword()
   @IsNotEmpty()

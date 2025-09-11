@@ -1,4 +1,5 @@
 import {FindManyOptions} from 'typeorm'
+
 export interface ISuccessRes {
   statusCode: number;
   message: string;
