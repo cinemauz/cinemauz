@@ -119,9 +119,11 @@ export class AdminService
       is_active: admin.is_active,
       role: admin.role,
     };
+
     const accessToken = await this.tokenService.accessToken(payload);
     const refreshToken = await this.tokenService.refreshToken(payload);
     await this.tokenService.writeCookie(res, 'adminToken', refreshToken, 15);
+    
     return successRes({ token: accessToken });
   }
 }
