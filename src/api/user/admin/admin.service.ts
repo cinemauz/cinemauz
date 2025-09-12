@@ -22,6 +22,7 @@ import { successRes } from 'src/infrastructure/response/succesRes';
 import { Response } from 'express';
 import { IToken } from 'src/infrastructure/token/token.interface';
 import { SignInAdminDto } from './dto/sign-in.dto';
+import { TokenUser } from 'src/common/enum/token-user';
 @Injectable()
 export class AdminService
   extends BaseService<CreateAdminDto, UpdateAdminDto, AdminEntity>
@@ -160,7 +161,7 @@ export class AdminService
     const refreshToken = await this.tokenService.refreshToken(payload);
 
     // write cookie
-    await this.tokenService.writeCookie(res, 'adminToken', refreshToken, 15);
+    await this.tokenService.writeCookie(res, TokenUser.Customer, refreshToken, 15);
 
     return successRes({ token: accessToken });
   }

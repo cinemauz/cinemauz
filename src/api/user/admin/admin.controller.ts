@@ -36,6 +36,7 @@ import { AuthService } from '../auth/auth.service';
 import type { Response } from 'express';
 import { QueryPagination } from 'src/common/dto/query.pagenation';
 import { UpdatePassword } from './dto/update-password.dto';
+import { TokenUser } from 'src/common/enum/token-user';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -94,7 +95,7 @@ export class AdminController {
   @Post('newtoken')
 
   // NEW TOKEN
-  newToken(@CookieGetter('adminToken') token: string) {
+  newToken(@CookieGetter(TokenUser.Admin) token: string) {
     return this.authService.newToken(this.adminService.getRepository, token);
   }
 
@@ -114,14 +115,14 @@ export class AdminController {
 
   // SIGN OUT
   signOut(
-    @CookieGetter('adminToken') token: string,
+    @CookieGetter(TokenUser.Admin) token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.authService.signOut(
       this.adminService.getRepository,
       token,
       res,
-      'adminToken',
+      TokenUser.Admin,
     );
   }
   // ================================= UPDATE OLD PASSWORD =================================

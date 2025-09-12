@@ -20,3 +20,25 @@ export const adminAll = {
   role: 'ADMIN',
   balance: '0',
 };
+
+
+export const customerData = {
+  id: '1',
+  createdAt: '2025-09-10T15:06:07.283Z',
+  updatedAt: '2025-09-10T15:06:07.283Z',
+  name: 'John Doe',
+  username: 'johndoe123',
+  hashed_password:
+    '$2b$07$GaDc.BaRiBbJdkuuIjB7MuCfN6/OK2ZuraJrrX6.4OY2BXvgm8tMK',
+  role: 'CUSTOMER',
+  is_active: true,
+  balance: '0',
+};
+
+export const customerAll = {
+  id: 5,
+  name: 'John Doe',
+  username: 'johndoe1231',
+  role: 'ADMIN',
+  balance: '0',
+};
