@@ -79,6 +79,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
 
   // ============================ FIND BY ============================
   async findOneBY(options?: IFindOption<Entity>): Promise<ISuccessRes> {
+
     // find option
     const data = await this.baseRepo.find({
       select: options?.select || {},
@@ -100,10 +101,15 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
     id: number,
     options?: IFindOption<Entity>,
   ): Promise<ISuccessRes> {
+
     // find by id
-    if (id == config.SUPERADMIN.ID) {
-      throw new NotFoundException('You could not show Super Admin');
+    if(this.baseRepo.metadata.name=='admin'){
+      if (id == config.SUPERADMIN.ID) {
+        throw new NotFoundException('You could not show Super Admin');
+      }
     }
+
+    // find one with option
     const data = await this.baseRepo.findOne({
       select: options?.select || {},
       relations: options?.relations || [],
@@ -116,11 +122,14 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
         `not found this id => ${id} on ${String(this.baseRepo.metadata.name).split('Entity')[0]}`,
       );
     }
+
+    // return success
     return successRes(data);
   }
 
   // ============================ UPDATE ============================
   async update(id: number, dto: UpdateDto): Promise<ISuccessRes> {
+
     // check id
     await this.findOneById(id);
 
@@ -134,8 +143,14 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
 
   // ============================ DELETE ============================
   async remove(id: number): Promise<ISuccessRes> {
+
+    // check id
     await this.findOneById(id);
+
+    // delete
     await this.baseRepo.delete(id);
+
+    // return success
     return successRes({});
   }
   // ============================ SOFT DELETE ============================

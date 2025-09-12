@@ -7,11 +7,15 @@ import { TokenService } from 'src/infrastructure/token/Token';
 import { CryptoService } from 'src/infrastructure/crypt/Crypto';
 import { BaseService } from 'src/infrastructure/base/base.service';
 import { AuthService } from '../auth/auth.service';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { TelegramService } from 'src/infrastructure/telegram/send-otp';
+import { RedisService } from 'src/infrastructure/redis/Redis';
 
 @Module({
   imports:[TypeOrmModule.forFeature([CustomerEntity])],
   controllers: [CustomerController],
-  providers: [CustomerService,TokenService,CryptoService,BaseService,AuthService],
+  providers: [CustomerService,TokenService,CryptoService,BaseService,AuthService,TelegramService,RedisService],
   exports:[CustomerService]
 })
 export class CustomerModule {}
