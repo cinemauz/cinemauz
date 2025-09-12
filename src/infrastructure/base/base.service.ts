@@ -1,7 +1,5 @@
 import {
   DeepPartial,
-  FindOptionsWhere,
-  ILike,
   ObjectLiteral,
   Repository,
 } from 'typeorm';
@@ -9,8 +7,7 @@ import { IFindOption, ISuccessRes } from '../response/success.interface';
 import { successRes } from '../response/succesRes';
 import { NotFoundException } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
-import { toSkipTake } from '../pagination/skip-page';
-import { Roles } from 'src/common/enum/Roles';
+
 import { config } from 'src/config/env.config';
 
 export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
@@ -30,51 +27,6 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   async findAll(options?: IFindOption<Entity>): Promise<ISuccessRes> {
     const data = await this.baseRepo.find({ ...options });
     return successRes(data);
-  }
-
-  // ============================ FIND ALL PAGENATION ============================
-  async findAllWithPagination(
-    query: string = '',
-    limit: number = 10,
-    page: number = 1,
-  ) {
-    // fix skip and take
-    const { take, skip } = toSkipTake(page, limit);
-
-    // count
-    const [user, count] = await this.baseRepo.findAndCount({
-      where: {
-        username: ILike(`%${query}%`),
-        is_deleted: false,
-        role: Roles.ADMIN,
-      } as unknown as FindOptionsWhere<Entity>,
-      order: {
-        createdAt: 'DESC' as any,
-      },
-      select: {
-        id: true,
-        username: true,
-        role: true,
-        balance: true,
-        name: true,
-      } as any,
-      take,
-      skip,
-    });
-
-    // total page
-    const total_page = Math.ceil(count / limit);
-
-    // return success
-    return successRes({
-      data: user,
-      mete: {
-        page,
-        total_page,
-        total_count: count,
-        hasNextPage: total_page > page,
-      },
-    });
   }
 
   // ============================ FIND BY ============================

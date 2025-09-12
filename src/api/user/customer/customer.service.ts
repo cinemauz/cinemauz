@@ -5,7 +5,7 @@ import { BaseService } from 'src/infrastructure/base/base.service';
 import { CustomerEntity } from 'src/core/entity/users/customer.entity';
 import { ISuccessRes } from 'src/infrastructure/response/success.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { CryptoService } from 'src/infrastructure/crypt/Crypto';
 import { TokenService } from 'src/infrastructure/token/Token';
 import { successRes } from 'src/infrastructure/response/succesRes';
@@ -18,6 +18,8 @@ import { generateOTP } from 'src/infrastructure/generator-otp/generator-otp';
 import { config } from 'src/config/env.config';
 import { EmailWithOtp } from './dto/with-email.dt';
 import { RedisService } from 'src/infrastructure/redis/Redis';
+import { TokenUser } from 'src/common/enum/token-user';
+import { toSkipTake } from 'src/infrastructure/pagination/skip-page';
 
 @Injectable()
 export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustomerDto, CustomerEntity> {
@@ -183,9 +185,53 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
     const refreshToken = await this.tokenService.refreshToken(payload);
 
     // write cookie
-    await this.tokenService.writeCookie(res, 'CustomerToken', refreshToken, 15);
+    await this.tokenService.writeCookie(res, TokenUser.Customer, refreshToken, 15);
 
     return successRes({ token: accessToken });
   }
+   // ============================ FIND ALL PAGENATION ============================
+    async findAllWithPagination(
+      query: string = '',
+      limit: number = 10,
+      page: number = 1,
+    ) {
+      // fix skip and take
+      const { take, skip } = toSkipTake(page, limit);
+  
+      // count
+      const [user, count] = await this.customerRepo.findAndCount({
+        where: {
+          name: ILike(`%${query}%`),
+          is_deleted: false,
+          role: Roles.CUSTOMER,
+        } as unknown as FindOptionsWhere<CustomerEntity>,
+        order: {
+          createdAt: 'DESC' as any,
+        },
+        select: {
+          id: true,
+          name: true,
+          email:true,
+          role: true,
+          balance: true,
+        } as any,
+        take,
+        skip,
+      });
+  
+      // total page
+      const total_page = Math.ceil(count / limit);
+  
+      // return success
+      return successRes({
+        data: user,
+        mete: {
+          page,
+          total_page,
+          total_count: count,
+          hasNextPage: total_page > page,
+        },
+      });
+    }
 
 }
