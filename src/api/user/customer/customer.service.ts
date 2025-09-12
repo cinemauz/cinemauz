@@ -1,26 +1,128 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { BaseService } from 'src/infrastructure/base/base.service';
+import { CustomerEntity } from 'src/core/entity/users/customer.entity';
+import { ISuccessRes } from 'src/infrastructure/response/success.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CryptoService } from 'src/infrastructure/crypt/Crypto';
+import { TokenService } from 'src/infrastructure/token/Token';
+import { successRes } from 'src/infrastructure/response/succesRes';
+import { IToken } from 'src/infrastructure/token/token.interface';
+import { Roles } from 'src/common/enum/Roles';
+import { SignInCustomer } from './dto/sign-in.dt';
+import { Response } from 'express';
 
 @Injectable()
-export class CustomerService {
-  create(createCustomerDto: CreateCustomerDto) {
-    return 'This action adds a new customer';
+export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustomerDto, CustomerEntity> {
+
+  // ================================ CONSTRUCTOR ================================
+  constructor(
+    @InjectRepository(CustomerEntity)
+    private readonly customerRepo: Repository<CustomerEntity>,
+    private readonly crypto: CryptoService,
+    private readonly tokenService: TokenService,
+  ) {
+    super(customerRepo);
+  }
+  
+  // ================================ CREATE CUSTOMER ================================
+  async createCustomer(createCustomerDto: CreateCustomerDto): Promise<ISuccessRes> {
+    const { email, password, ...rest } = createCustomerDto;
+
+    // check email
+    const existEmail = await this.customerRepo.findOne({ where: { email } });
+    if (existEmail) {
+      throw new ConflictException(
+        `this user => ${email} is already exist on Customer`,
+      );
+    }
+
+    // enrypt password
+    const hashed_password = await this.crypto.encrypt(password);
+
+    // save Customer
+    const data = this.customerRepo.create({ ...rest, email, hashed_password });
+    await this.customerRepo.save(data);
+    return successRes(data);
   }
 
-  findAll() {
-    return `This action returns all customer`;
+  // ================================ UPDATE CUSTOMER ================================
+  async updateCustomer(id: number, updateCustomerDto: UpdateCustomerDto, user: IToken) {
+
+    // check Customer
+    const customer = await this.customerRepo.findOne({ where: { id } });
+    if (!customer) {
+      throw new NotFoundException(`not found this id => ${id} on Customer`)
+    }
+
+    // check username
+    const { email, password, is_active } = updateCustomerDto
+    if (email) {
+      const existName = await this.customerRepo.findOne({ where: { email } })
+      if (existName && existName.id != id) {
+        throw new ConflictException(`This username => ${email} already exist`)
+      }
+    }
+
+    // check Super Admin or Admin Role
+    let hashed_password = customer.hashed_password
+    let active = customer.is_active
+    if (user.role == Roles.SUPERADMIN || user.role == Roles.ADMIN) {
+
+      // check password
+      if (password) {
+        hashed_password = await this.crypto.encrypt(password)
+      }
+      // check is active
+      if (is_active != null) {
+        active = is_active
+      }
+    }
+
+    // update Customer
+    await this.customerRepo.update({ id }, { email, hashed_password, is_active: active })
+    return await this.findOneById(id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} customer`;
-  }
+  // ================================ SIGN IN ================================
 
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
-  }
+  async signIn(signInDto: SignInCustomer, res: Response) {
+    const { email, password } = signInDto;
 
-  remove(id: number) {
-    return `This action removes a #${id} customer`;
+    // check email
+    const customer = await this.customerRepo.findOne({ where: { email } });
+    if (!customer) {
+      throw new UnauthorizedException('Email or Password is incorect');
+    }
+
+    // check password
+    const checkPass = await this.crypto.decrypt(
+      password,
+      customer?.hashed_password as string,
+    );
+
+    if (!customer || !checkPass) {
+      throw new UnauthorizedException('Username or Password is incorect');
+    }
+
+    // give payload
+    const payload: IToken = {
+      id: Number(customer.id),
+      is_active: customer.is_active,
+      role: customer.role,
+    };
+
+    // access token
+    const accessToken = await this.tokenService.accessToken(payload);
+
+    // refresh token
+    const refreshToken = await this.tokenService.refreshToken(payload);
+
+    // write cookie
+    await this.tokenService.writeCookie(res, 'CustomerToken', refreshToken, 15);
+
+    return successRes({ token: accessToken });
   }
 }

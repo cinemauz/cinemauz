@@ -6,40 +6,270 @@ import {
   Patch,
   Param,
   Delete,
+  HttpStatus,
+  UseGuards,
+  Res,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { AuthService } from '../auth/auth.service';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { SwaggerApi } from 'src/common/swagger-apiresponse/swagger-response';
+import { customerAll, customerData, tokenRes } from 'src/common/document/swagger';
+import { AccessRoles } from 'src/common/decorator/roles.decorator';
+import { AuthGuard } from 'src/common/guard/auth.guard';
+import { RolesGuard } from 'src/common/guard/role.guard';
+import { Roles } from 'src/common/enum/Roles';
+import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
+import { UpdatePassword } from '../admin/dto/update-password.dto';
+import { QueryPagination } from 'src/common/dto/query.pagenation';
+import { GetRequestUser } from 'src/common/decorator/get-request.decorator';
+import type { IToken } from 'src/infrastructure/token/token.interface';
+import { SignInCustomer } from './dto/sign-in.dt';
+import type { Response } from 'express';
+import { TokenUser } from 'src/common/enum/token-user';
 
 @Controller('customer')
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(
+    private readonly customerService: CustomerService,
+    private readonly authService: AuthService,
+  ) { }
 
+  // ================================= CREATED =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Created Customer' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse(
+      customerData,
+      HttpStatus.CREATED,
+      'Customer created',
+    ),
+  )
+  // ENDPOINT
   @Post()
+
+  // CREATED
   create(@Body() createCustomerDto: CreateCustomerDto) {
-    return this.customerService.create(createCustomerDto);
+    return this.customerService.createCustomer(createCustomerDto);
   }
 
+  // ================================= SIGN IN =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Sign In' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(tokenRes))
+
+  // ENDPOINT
+  @Post('signin')
+
+  // SIGN IN
+  signIn(
+    @Body() signInDto: SignInCustomer,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.customerService.signIn(signInDto, res);
+  }
+
+  // ================================= NEW TOKEN =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'New Token' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(tokenRes))
+
+  // ENDPOINT
+  @Post('newtoken')
+
+  // NEW TOKEN
+  newToken(@CookieGetter(TokenUser.Customer) token: string) {
+    return this.authService.newToken(this.customerService.getRepository, token);
+  }
+
+  // ================================= SIGN OUT =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Sign out' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, 'ID')
+
+  // ENDPOINT
+  @Post('signout')
+  @ApiBearerAuth()
+
+  // SIGN OUT
+  signOut(
+    @CookieGetter(TokenUser.Customer) token: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.signOut(
+      this.customerService.getRepository,
+      token,
+      res,
+      TokenUser.Customer
+    );
+  }
+
+  // ================================= UPDATE OLD PASSWORD =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Update Password' })
+  @ApiParam(SwaggerApi.ApiParam())
+  @ApiResponse(SwaggerApi.ApiSuccessResponse())
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, 'ID')
+
+  // ENDPOINT
+  @Post('update-password:id')
+  @ApiBearerAuth()
+
+  // UPDATE PASSWORD
+  updatePassoword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePassword: UpdatePassword
+  ) {
+    const { old_password, new_password } = updatePassword
+    return this.authService.UpdatePassword(old_password, new_password, id, this.customerService.getRepository)
+  }
+
+  // ================================= GET ALL PAGENATION =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Find All Pagenation' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse([customerData, customerData]))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+
+  // ENDPOINT
+  @Get('page')
+  @ApiBearerAuth()
+
+  // PAGENATION
+  findAllWithPagenation(@Query() queryDto: QueryPagination) {
+
+    const { query, limit, page } = queryDto;
+
+    return this.customerService.findAllWithPagination(query, limit, page);
+  }
+
+  // ================================= GET ALL =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Get All Customer' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse([customerAll, customerAll]))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+
+  // ENDPOINT
   @Get()
+  @ApiBearerAuth()
+
+  // FIND ALL
   findAll() {
-    return this.customerService.findAll();
+    return this.customerService.findAll({
+      where: { is_deleted: false, role: Roles.ADMIN },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        balance: true,
+        name: true,
+      },
+      order: { createdAt: 'DESC' },
+    });
   }
 
+  // ================================= GET ONE =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Get one' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(customerData))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, 'ID')
+
+  // ENDPOINT
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.customerService.findOne(+id);
+  @ApiBearerAuth()
+
+  // FIND ONE
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.customerService.findOneById(+id);
   }
 
+  // ================================= UPDATE =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Update Customer' })
+  @ApiParam(SwaggerApi.ApiParam())
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(customerData))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, 'ID')
+
+  // ENDPOINT
   @Patch(':id')
+  @ApiBearerAuth()
+
+  // UPDATE
   update(
-    @Param('id') id: number,
+    @GetRequestUser('user') user: IToken,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    return this.customerService.update(+id, updateCustomerDto);
+    return this.customerService.updateCustomer(+id, updateCustomerDto, user);
   }
 
+  // ================================= SOFT DELETE =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Soft delete Customer' })
+  @ApiParam(SwaggerApi.ApiParam())
+  @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+
+  // ENDPOINT
+  @Patch('delete/:id')
+  @ApiBearerAuth()
+
+  // UPDATE
+  softDelete(@Param('id', ParseIntPipe) id: number) {
+    return this.customerService.softDelete(+id);
+  }
+
+  // ================================= DELETE =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Delete Customer' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+
+  // ENDPOINT
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  @ApiBearerAuth()
+
+  // DELETE
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.customerService.remove(+id);
   }
 }
