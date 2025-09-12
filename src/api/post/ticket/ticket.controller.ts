@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 
-@Controller('ticket')
+@Controller('tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
@@ -27,16 +19,19 @@ export class TicketController {
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.ticketService.findOne(+id);
+    return this.ticketService.findOneById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateTicketDto: UpdateTicketDto) {
-    return this.ticketService.update(+id, updateTicketDto);
+  update(
+    @Param('id') id: number,
+    @Body() updateTicketDto: UpdateTicketDto,
+  ) {
+    return this.ticketService.update(id, updateTicketDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return this.ticketService.remove(+id);
+    return this.ticketService.remove(id);
   }
 }

@@ -1,33 +1,23 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateTicketDto {
-  // ------------------------------ PRICE------------------------------
-  @ApiProperty({
-    description: 'Bilet narxi',
-    example: 15.5,
-    minimum: 0,
-  })
+  @ApiProperty({ description: 'Joy raqami', example: 'A12' })
+  @IsString()
+  @IsNotEmpty()
+  seat_number: string;
+
+  @ApiProperty({ description: 'Bilet narxi', example: 50000 })
   @IsNumber()
-  @Min(0)
   @IsNotEmpty()
   price: number;
 
-  // ------------------------------ SHOW TIME ID ------------------------------
-  @ApiProperty({
-    description: 'Showtime ID',
-    example: 5,
-  })
+  @ApiProperty({ description: 'Showtime ID', example: 3 })
   @IsInt()
   @IsNotEmpty()
   showtime_id: number;
 
-  // ------------------------------ STATUS ------------------------------
-  @ApiPropertyOptional({
-    description: 'Bilet holati (true = mavjud, false = sotilgan)',
-    example: true,
-  })
+  @ApiProperty({ description: 'Holati (faol yoki yo‘q)', example: true })
   @IsBoolean()
-  @IsOptional()
-  status?: boolean;
+  status: boolean;
 }
