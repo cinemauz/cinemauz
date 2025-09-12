@@ -36,6 +36,7 @@ import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
 import { AuthService } from '../auth/auth.service';
 import type { Response } from 'express';
 import { QueryPagination } from 'src/common/dto/query.pagenation';
+import { UpdatePassword } from './dto/update-password.dto';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -43,7 +44,7 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   // ================================= CREATED =================================
 
@@ -77,6 +78,8 @@ export class AdminController {
 
   // ENDPOINT
   @Post('signin')
+
+  // SIGN IN
   signIn(
     @Body() signInDto: SignInAdminDto,
     @Res({ passthrough: true }) res: Response,
@@ -90,6 +93,8 @@ export class AdminController {
 
   // ENDPOINT
   @Post('newtoken')
+
+  // NEW TOKEN
   newToken(@CookieGetter('adminToken') token: string) {
     return this.authService.newToken(this.adminService.getRepository, token);
   }
@@ -107,6 +112,8 @@ export class AdminController {
   // ENDPOINT
   @Post('signout')
   @ApiBearerAuth()
+
+  // SIGN OUT
   signOut(
     @CookieGetter('adminToken') token: string,
     @Res({ passthrough: true }) res: Response,
@@ -118,10 +125,34 @@ export class AdminController {
       'adminToken',
     );
   }
+  // ================================= UPDATE OLD PASSWORD =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Update Password' })
+  @ApiParam(SwaggerApi.ApiParam())
+  @ApiResponse(SwaggerApi.ApiSuccessResponse())
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, 'ID')
+
+  // ENDPOINT
+  @Post('update-password:id')
+  @ApiBearerAuth()
+
+  // UPDATE PASSWORD
+  updatePassoword(
+    @Param('id',ParseIntPipe) id:number,
+    @Body() updatePassword:UpdatePassword
+  ) {
+    const {old_password,new_password}=updatePassword
+    return this.authService.UpdatePassword(old_password,new_password,id,this.adminService.getRepository)
+  }
   // ================================= GET ALL PAGENATION =================================
   // SWAGGER
   @ApiOperation({ summary: 'Find All Pagenation' })
   @ApiResponse(SwaggerApi.ApiSuccessResponse([adminData, adminData]))
+
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
   @AccessRoles(Roles.SUPERADMIN)
@@ -129,8 +160,12 @@ export class AdminController {
   // ENDPOINT
   @Get('page')
   @ApiBearerAuth()
+
+  // PAGENATION
   findAllWithPagenation(@Query() queryDto: QueryPagination) {
+
     const { query, limit, page } = queryDto;
+
     return this.adminService.findAllWithPagination(query, limit, page);
   }
   // ================================= GET ALL =================================
