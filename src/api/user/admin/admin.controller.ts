@@ -8,7 +8,6 @@ import {
   Delete,
   HttpStatus,
   UseGuards,
-  Req,
   Res,
   Query,
   ParseIntPipe,

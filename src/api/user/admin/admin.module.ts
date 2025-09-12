@@ -13,5 +13,6 @@ import { AuthService } from '../auth/auth.service';
   imports: [TypeOrmModule.forFeature([AdminEntity])],
   controllers: [AdminController],
   providers: [AdminService, CryptoService, TokenService,BaseService,AuthService],
+  exports:[AdminService]
 })
 export class AdminModule {}
