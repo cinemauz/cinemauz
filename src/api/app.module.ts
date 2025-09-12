@@ -17,6 +17,8 @@ import { AuthModule } from './user/auth/auth.module';
 import { CryptoService } from 'src/infrastructure/crypt/Crypto';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisService } from 'src/infrastructure/redis/Redis';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { Email } from 'src/common/enum/email';
 
 @Module({
   imports: [
@@ -35,6 +37,18 @@ import { RedisService } from 'src/infrastructure/redis/Redis';
     JwtModule.register({
       global: true,
     }),
+    // ========================= EMAIL =========================
+    MailerModule.forRoot({
+      transport: {
+        host: Email.HOST,
+        port: Email.PORT,
+        secure: false,
+        auth: {
+          user: Email.USER,
+          pass: Email.PASS,
+        },
+      },
+    }),
     // ========================= MODULE =========================
     AdminModule,
     CustomerModule,
@@ -49,6 +63,6 @@ import { RedisService } from 'src/infrastructure/redis/Redis';
     WalletModule,
     AuthModule,
   ],
-  providers: [CryptoService,RedisService],
+  providers: [CryptoService, RedisService],
 })
-export class AppModule {}
+export class AppModule { }

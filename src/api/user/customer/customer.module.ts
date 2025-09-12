@@ -11,11 +11,12 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { TelegramService } from 'src/infrastructure/telegram/send-otp';
 import { RedisService } from 'src/infrastructure/redis/Redis';
+import { EmailService } from 'src/infrastructure/email/Email-OTP';
 
 @Module({
   imports:[TypeOrmModule.forFeature([CustomerEntity])],
   controllers: [CustomerController],
-  providers: [CustomerService,TokenService,CryptoService,BaseService,AuthService,TelegramService,RedisService],
+  providers: [CustomerService,EmailService,TokenService,CryptoService,BaseService,AuthService,TelegramService,RedisService],
   exports:[CustomerService]
 })
 export class CustomerModule {}

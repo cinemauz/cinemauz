@@ -20,6 +20,7 @@ import { EmailWithOtp } from './dto/with-email.dt';
 import { RedisService } from 'src/infrastructure/redis/Redis';
 import { TokenUser } from 'src/common/enum/token-user';
 import { toSkipTake } from 'src/infrastructure/pagination/skip-page';
+import { EmailService } from 'src/infrastructure/email/Email-OTP';
 
 @Injectable()
 export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustomerDto, CustomerEntity> {
@@ -33,7 +34,8 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
     private readonly crypto: CryptoService,
     private readonly tokenService: TokenService,
     private readonly bot: TelegramService,
-    private readonly redis:RedisService
+    private readonly redis:RedisService,
+    private readonly email:EmailService
   ) {
     super(customerRepo);
   }
@@ -61,6 +63,9 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
 
     // save Customer
     const data = ({ ...rest, email, hashed_password, otp });
+
+    // send Email OTP
+    await this.email.sendOtpEmail(email,otp)
 
     // send telegram otp
     await this.bot.sendCode(otp)
