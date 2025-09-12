@@ -26,7 +26,17 @@ type ConfigType = {
     HOST: string;
     PORT: number;
     PASSWORD: string;
+    TIME:number
   };
+
+  TELEGRAM:{
+    TOKEN:string
+  };
+
+  OTP:{
+    NUMBER:number,
+    TIME:number
+  }
 };
 
 export const config: ConfigType = {
@@ -56,5 +66,15 @@ export const config: ConfigType = {
     HOST: String(process.env.REDIS_HOST),
     PORT: Number(process.env.REDIS_PORT),
     PASSWORD: String(process.env.REDIS_PASSWORD),
+    TIME:Number(process.env.REDIS_TIME)
   },
+
+  TELEGRAM:{
+    TOKEN:String(process.env.TELEGRAM_TOKEN)
+  },
+
+  OTP:{
+    NUMBER:Number(process.env.OTP_NUMBER),
+    TIME:Number(process.env.OTP_TIME)
+  }
 };

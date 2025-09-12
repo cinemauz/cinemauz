@@ -18,7 +18,8 @@ export abstract class BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-    // ----------------- IS DELETED -----------------
-  @Column({type:'boolean', nullable:true,default:false})
-  is_deleted:boolean
+  // ----------------- IS DELETED -----------------
+  @Column({ type: 'boolean', nullable: true, default: false })
+  is_deleted?: boolean
 }
+

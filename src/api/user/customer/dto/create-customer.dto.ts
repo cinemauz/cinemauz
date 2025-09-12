@@ -16,7 +16,7 @@ export class CreateCustomerDto {
   // --------------------------------------- EMAIL---------------------------------------
   @ApiProperty({
     description: 'Mijozning email manzili',
-    example: 'alice@example.com',
+    example: 'www.komol8689@gmail.com',
   })
   @IsEmail()
   @IsString()

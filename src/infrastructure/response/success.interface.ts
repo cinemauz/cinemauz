@@ -5,6 +5,7 @@ export interface ISuccessRes {
   message: string;
   data: object;
 }
+
 export interface IResponsePagination extends ISuccessRes {
   totalElements: number;
   totalPages: number;

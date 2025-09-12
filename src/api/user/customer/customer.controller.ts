@@ -12,13 +12,14 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
+
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { customerAll, customerData, tokenRes } from 'src/common/document/swagger';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { AuthService } from '../auth/auth.service';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { SwaggerApi } from 'src/common/swagger-apiresponse/swagger-response';
-import { customerAll, customerData, tokenRes } from 'src/common/document/swagger';
 import { AccessRoles } from 'src/common/decorator/roles.decorator';
 import { AuthGuard } from 'src/common/guard/auth.guard';
 import { RolesGuard } from 'src/common/guard/role.guard';
@@ -27,10 +28,11 @@ import { CookieGetter } from 'src/common/decorator/cooki-getter.decorator';
 import { UpdatePassword } from '../admin/dto/update-password.dto';
 import { QueryPagination } from 'src/common/dto/query.pagenation';
 import { GetRequestUser } from 'src/common/decorator/get-request.decorator';
-import type { IToken } from 'src/infrastructure/token/token.interface';
 import { SignInCustomer } from './dto/sign-in.dt';
-import type { Response } from 'express';
 import { TokenUser } from 'src/common/enum/token-user';
+import type { IToken } from 'src/infrastructure/token/token.interface';
+import type { Response } from 'express';
+import { EmailWithOtp } from './dto/with-email.dt';
 
 @Controller('customer')
 export class CustomerController {
@@ -39,15 +41,15 @@ export class CustomerController {
     private readonly authService: AuthService,
   ) { }
 
-  // ================================= CREATED =================================
+  // ================================= REGIRSTRATION =================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Created Customer' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
-      customerData,
-      HttpStatus.CREATED,
-      'Customer created',
+      {email:'www.example@gmail.com'},
+      HttpStatus.OK,
+      'Waiting otp on Email',
     ),
   )
   // ENDPOINT
@@ -56,6 +58,25 @@ export class CustomerController {
   // CREATED
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.createCustomer(createCustomerDto);
+  }
+
+   // ================================= CONFRIM OTP REGIRSTRATION  =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Confirm OTP' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse(
+      {customerData},
+      HttpStatus.OK,
+      'Created Customer',
+    ),
+  )
+  // ENDPOINT
+  @Post('otp')
+
+  // CREATED
+  registration(@Body() emailWithOtp: EmailWithOtp) {
+    return this.customerService.registrationOtp(emailWithOtp);
   }
 
   // ================================= SIGN IN =================================

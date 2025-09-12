@@ -13,7 +13,7 @@ import { AdminEntity } from 'src/core/entity/users/admin.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from 'src/infrastructure/crypt/Crypto';
 import { TokenService } from 'src/infrastructure/token/Token';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { ISuccessRes } from 'src/infrastructure/response/success.interface';
 import { OnModuleInit } from '@nestjs/common';
 import { Roles } from 'src/common/enum/Roles';
@@ -23,6 +23,7 @@ import { Response } from 'express';
 import { IToken } from 'src/infrastructure/token/token.interface';
 import { SignInAdminDto } from './dto/sign-in.dto';
 import { TokenUser } from 'src/common/enum/token-user';
+import { toSkipTake } from 'src/infrastructure/pagination/skip-page';
 @Injectable()
 export class AdminService
   extends BaseService<CreateAdminDto, UpdateAdminDto, AdminEntity>
@@ -165,4 +166,47 @@ export class AdminService
 
     return successRes({ token: accessToken });
   }
+   // ============================ FIND ALL PAGENATION ============================
+    async findAllWithPagination(
+      query: string = '',
+      limit: number = 10,
+      page: number = 1,
+    ) {
+      // fix skip and take
+      const { take, skip } = toSkipTake(page, limit);
+  
+      // count
+      const [user, count] = await this.adminRepo.findAndCount({
+        where: {
+          username: ILike(`%${query}%`),
+          is_deleted: false,
+          role: Roles.ADMIN,
+        } as unknown as FindOptionsWhere<AdminEntity>,
+        order: {
+          createdAt: 'DESC' as any,
+        },
+        select: {
+          id: true,
+          name: true,
+          role: true,
+          balance: true,
+        } as any,
+        take,
+        skip,
+      });
+  
+      // total page
+      const total_page = Math.ceil(count / limit);
+  
+      // return success
+      return successRes({
+        data: user,
+        mete: {
+          page,
+          total_page,
+          total_count: count,
+          hasNextPage: total_page > page,
+        },
+      });
+    }
 }
