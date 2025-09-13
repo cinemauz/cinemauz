@@ -169,7 +169,7 @@ export class ReviewController {
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Delete(':id')

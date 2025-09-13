@@ -18,7 +18,7 @@ export class RoomController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Create Room' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.reviewDate))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.roomDate))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -37,7 +37,7 @@ export class RoomController {
   // SWAGGER
   @ApiOperation({ summary: 'Get All Room' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse([PostSawgger.genreAll, PostSawgger.genreAll]),
+    SwaggerApi.ApiSuccessResponse([PostSawgger.roomAll, PostSawgger.roomAll]),
   )
 
   // ENDPOINT
@@ -64,7 +64,7 @@ export class RoomController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Get One Room' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.reviewDate))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.roomDate))
 
   // ENDPOINT
   @Get(':id')
@@ -91,7 +91,7 @@ export class RoomController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Update Room' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.reviewDate))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.roomDate))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -133,7 +133,7 @@ export class RoomController {
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Delete(':id')

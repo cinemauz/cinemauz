@@ -5,11 +5,13 @@ export class PostSawgger {
     createdAt: '2025-09-13T07:02:33.525Z',
     updatedAt: '2025-09-13T07:02:33.525Z',
     name: 'Action',
+    movies: [],
   };
 
   static genreAll = {
-    id: 1,
-    name: 'Action',
+    id: 10,
+    name: 'Action2',
+    movies: [],
   };
   // ------------------------ COUNTRY ------------------------
   static countryDate = {
@@ -118,5 +120,47 @@ export class PostSawgger {
     location: '1st Floor, Building A',
     total_seats: 120,
     is_active: true,
+  };
+
+  static roomAll = {
+    id: 1,
+    name: 'VIP Hall 2',
+    location: '1st Floor, Building A',
+    total_seats: 120,
+    is_active: true,
+  };
+
+  // --------------------------- SHOW TIME ---------------------------
+
+  static showtimeDate = {
+    id: 1,
+    createdAt: '2025-09-13T18:07:43.317Z',
+    updatedAt: '2025-09-13T18:07:43.317Z',
+    movie_id: 1,
+    ticket_quantity: 100,
+    room_id: 1,
+    start_time: '13:00:00',
+    end_time: '15:00:00',
+    is_active: true,
+    seat_qantity: 120,
+  };
+
+  static showtimeAll = {
+    id: 1,
+    ticket_quantity: 100,
+    start_time: '13:00:00',
+    end_time: '15:00:00',
+    is_active: true,
+    room: {
+      id: 1,
+      name: 'VIP Hall 2',
+      location: '1st Floor, Building A',
+      is_active: true,
+    },
+    movies: {
+      id: 1,
+      createdAt: '2025-09-13T14:35:25.417Z',
+      title: 'Inception 2',
+    },
   };
 }

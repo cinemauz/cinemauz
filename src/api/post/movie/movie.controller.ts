@@ -59,7 +59,7 @@ export class MovieController {
       where: {
         is_deleted: false,
       },
-      relations: { admin: true, country: true, genre: true },
+      relations: { admin: true, country: true, genre: true, showtimes: true },
       select: {
         id: true,
         title: true,
@@ -78,6 +78,17 @@ export class MovieController {
         genre: {
           id: true,
           name: true,
+        },
+        showtimes: {
+          id: true,
+          start_time: true,
+          is_active: true,
+          ticket_quantity: true,
+          room: {
+            id: true,
+            name: true,
+            location: true,
+          },
         },
       },
       order: { createdAt: 'DESC' },
@@ -175,7 +186,7 @@ export class MovieController {
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Delete(':id')

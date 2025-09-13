@@ -8,11 +8,13 @@ export class CountryEntity extends BaseEntity {
 
   @Column({ type: 'varchar', unique: true })
   name: string;
+  
+  // ================================= REALATION =================================
 
   // -------------------- MOVIES --------------------
-  
+
   @OneToMany(() => MovieEntity, (movie) => movie.country, {
-    cascade:true
+    cascade: true,
   })
   movies: MovieEntity[];
 }

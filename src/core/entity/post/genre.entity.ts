@@ -8,6 +8,8 @@ export class GenreEntity extends BaseEntity {
 
   @Column({ type: 'varchar', unique: true })
   name: string;
+  
+  // ================================= REALATION =================================
 
   // -------------------- MOVIES --------------------
 

@@ -5,6 +5,7 @@ import { AdminEntity } from '../users/admin.entity';
 import { GenreEntity } from './genre.entity';
 import { CountryEntity } from './country.entity';
 import { ReviewEntity } from './review.entity';
+import { ShowtimeEntity } from './showtime.entity';
 
 @Entity('movie')
 export class MovieEntity extends BaseEntity {
@@ -56,6 +57,8 @@ export class MovieEntity extends BaseEntity {
 
   @Column({ type: 'int' })
   admin_id: number;
+  
+  // ================================= REALATION =================================
 
   // ---------------------------- ADMIN RELATION ----------------------------
 
@@ -90,4 +93,11 @@ export class MovieEntity extends BaseEntity {
     cascade: true,
   })
   reviews: ReviewEntity[];
+
+  // ---------------------------- SHOW TIME RELATION ----------------------------
+
+  @OneToMany(() => ShowtimeEntity, (showtime) => showtime.movies, {
+    cascade: true,
+  })
+  showtimes: ShowtimeEntity[];
 }
