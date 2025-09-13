@@ -7,13 +7,13 @@ export class EmailService {
 
   async sendOtpEmail(to: string, otp: string) {
     try {
-        await this.mailerService.sendMail({
-      to,
-      subject: 'Your OTP Code',
-      text: `Hello!\n\nYour OTP code is: ${otp}\n\nDo not share this code with anyone.`,
-    });
+      await this.mailerService.sendMail({
+        to,
+        subject: 'Your OTP Code',
+        text: `Hello!\n\nFrom: ${to}\n\nYour OTP code is: ${otp}\n\nDo not share this code with anyone.`,
+      });
     } catch (error) {
-        throw new InternalServerErrorException(`Error export OTP ${error}`)
+      throw new InternalServerErrorException(`Error export OTP ${error}`);
     }
   }
 }

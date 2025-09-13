@@ -1,4 +1,11 @@
-import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { BaseService } from 'src/infrastructure/base/base.service';
@@ -21,10 +28,14 @@ import { RedisService } from 'src/infrastructure/redis/Redis';
 import { TokenUser } from 'src/common/enum/token-user';
 import { toSkipTake } from 'src/infrastructure/pagination/skip-page';
 import { EmailService } from 'src/infrastructure/email/Email-OTP';
+import { ForgetPassword } from './dto/forget-password.dto';
 
 @Injectable()
-export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustomerDto, CustomerEntity> {
-
+export class CustomerService extends BaseService<
+  CreateCustomerDto,
+  UpdateCustomerDto,
+  CustomerEntity
+> {
   // ================================ CONSTRUCTOR ================================
 
   constructor(
@@ -34,16 +45,17 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
     private readonly crypto: CryptoService,
     private readonly tokenService: TokenService,
     private readonly bot: TelegramService,
-    private readonly redis:RedisService,
-    private readonly email:EmailService
+    private readonly redis: RedisService,
+    private readonly email: EmailService,
   ) {
     super(customerRepo);
   }
 
   // ================================ CREATE CUSTOMER ================================
 
-  async createCustomer(createCustomerDto: CreateCustomerDto):Promise<ISuccessRes>{
-
+  async createCustomer(
+    createCustomerDto: CreateCustomerDto,
+  ): Promise<ISuccessRes> {
     // destructure
     const { email, password, ...rest } = createCustomerDto;
 
@@ -59,22 +71,22 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
     const hashed_password = await this.crypto.encrypt(password);
 
     // generate otp
-    const otp = generateOTP(config.OTP.NUMBER)
+    const otp = generateOTP(config.OTP.NUMBER);
 
     // save Customer
-    const data = ({ ...rest, email, hashed_password, otp });
+    const data = { ...rest, email, hashed_password, otp };
 
     // send Email OTP
-    await this.email.sendOtpEmail(email,otp)
+    await this.email.sendOtpEmail(email, otp);
 
     // send telegram otp
-    await this.bot.sendCode(otp)
+    await this.bot.sendCode({ email, otp });
 
     // save JSON format
-    const result=JSON.stringify(data)
+    const result = JSON.stringify(data);
 
     // save redis
-    await this.redis.setRedis(email,result)
+    await this.redis.setRedis(email, result, config.OTP.TIME);
 
     // return success
     return successRes({ email });
@@ -82,77 +94,155 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
 
   // ================================ REGSTRATION CUSTOMER ================================
 
-  async registrationOtp(emailWithOtp: EmailWithOtp){
-
+  async registrationOtp(emailWithOtp: EmailWithOtp) {
     // distructur
-    const { email, otp } = emailWithOtp
+    const { email, otp } = emailWithOtp;
 
     // search email
-    const existEmail = await this.customerRepo.findOne({ where: { email } })
+    const existEmail = await this.customerRepo.findOne({ where: { email } });
     if (existEmail) {
-      throw new ConflictException(`this is email => ${email} already exist on Customer`)
+      throw new ConflictException(
+        `this is email => ${email} already exist on Customer`,
+      );
     }
 
-    // confirm otp    
-    const redisFind=await this.redis.getRedis(email)
-    if(!redisFind){
-      throw new BadRequestException('Email is invalid')
+    // confirm otp
+    const redisFind = await this.redis.getRedis(email);
+    if (!redisFind) {
+      throw new BadRequestException('Email is invalid');
     }
-    const user=JSON.parse(redisFind)  
+    const user = JSON.parse(redisFind);
 
     // invalid otp is error
     if (Number(user.otp) != otp) {
-      throw new BadRequestException('OTP is invalid')
+      throw new BadRequestException('OTP is invalid');
     }
 
     // delete otp in  cache
-    await this.redis.delRedis(email)
+    await this.redis.delRedis(email);
 
     // delete otp on data
-    delete user.otp
-    const data = this.customerRepo.create(user)
+    delete user.otp;
+    const data = this.customerRepo.create(user);
 
     // save customer
-    const result=await this.customerRepo.save(user)
-    return successRes(result)
+    const result = await this.customerRepo.save(user);
+    return successRes(result);
   }
   // ================================ UPDATE CUSTOMER ================================
 
-  async updateCustomer(id: number, updateCustomerDto: UpdateCustomerDto, user: IToken) {
-
+  async updateCustomer(
+    id: number,
+    updateCustomerDto: UpdateCustomerDto,
+    user: IToken,
+  ) {
     // check Customer
     const customer = await this.customerRepo.findOne({ where: { id } });
     if (!customer) {
-      throw new NotFoundException(`not found this id => ${id} on Customer`)
+      throw new NotFoundException(`not found this id => ${id} on Customer`);
     }
 
     // check username
-    const { email, password, is_active } = updateCustomerDto
+    const { email, password, is_active } = updateCustomerDto;
     if (email) {
-      const existName = await this.customerRepo.findOne({ where: { email } })
+      const existName = await this.customerRepo.findOne({ where: { email } });
       if (existName && existName.id != id) {
-        throw new ConflictException(`This username => ${email} already exist`)
+        throw new ConflictException(`This username => ${email} already exist`);
       }
     }
 
     // check Super Admin or Admin Role
-    let hashed_password = customer.hashed_password
-    let active = customer.is_active
+    let hashed_password = customer.hashed_password;
+    let active = customer.is_active;
     if (user.role == Roles.SUPERADMIN || user.role == Roles.ADMIN) {
-
       // check password
       if (password) {
-        hashed_password = await this.crypto.encrypt(password)
+        hashed_password = await this.crypto.encrypt(password);
       }
       // check is active
       if (is_active != null) {
-        active = is_active
+        active = is_active;
       }
     }
 
     // update Customer
-    await this.customerRepo.update({ id }, { email, hashed_password, is_active: active })
+    await this.customerRepo.update(
+      { id },
+      { email, hashed_password, is_active: active },
+    );
+
+    // show user
     return await this.findOneById(id);
+  }
+
+  // ============================ FORGET PASSWORD ============================
+
+  async forgetPassword(forgetPassword: EmailWithOtp): Promise<ISuccessRes> {
+    // get email
+    const { email } = forgetPassword;
+    const exist = await this.customerRepo.findOne({ where: { email } });
+    if (!exist) {
+      throw new NotFoundException(`this ${email} not found on Customer`);
+    }
+
+    // take OTP
+    const otp = generateOTP(6);
+
+    // save code on redis
+    await this.redis.setRedis(email, String(otp));
+
+    // send OTP
+    await this.bot.sendCode({ email, otp });
+
+    // send email
+    await this.email.sendOtpEmail(email, otp);
+
+    // return email
+
+    return successRes({ email });
+  }
+
+  // ============================ CONFIRM OTP FOR FORGET PASSWORD ============================
+  async confirmOtpWithEmail(forgetPassword: EmailWithOtp) {
+    
+    // dictructure
+    const { email, otp } = forgetPassword;
+
+    // get email
+    const exist = await this.customerRepo.findOne({ where: { email } });
+    if (!exist) {
+      throw new NotFoundException(`this ${email} not found on Customer`);
+    }    
+
+    // check OTP
+    const redisOtp = await this.redis.getRedis(email);
+
+    if (Number(redisOtp) != otp) {
+      throw new ConflictException('OTP is invalid');
+    }
+
+    // return email and url
+    return successRes({ email, url: config.UPDATE_URL });
+  }
+
+  // ============================ UPDATE PASSwORD FOR FORGET PASSWORD  ============================
+
+  async updatePassword(forgetPassword: EmailWithOtp) {
+    const { new_password, email } = forgetPassword;
+
+    // get email
+    const exist = await this.customerRepo.findOne({ where: { email } });
+    if (!exist) {
+      throw new NotFoundException(`this ${email} not found on Customer`);
+    }
+
+    // hashed password
+    const hashed_password = await this.crypto.encrypt(String(new_password));
+
+    // update password
+    await this.customerRepo.update({ id: exist.id }, { hashed_password });
+
+    return successRes({});
   }
 
   // ================================ SIGN IN ================================
@@ -190,53 +280,59 @@ export class CustomerService extends BaseService<CreateCustomerDto, UpdateCustom
     const refreshToken = await this.tokenService.refreshToken(payload);
 
     // write cookie
-    await this.tokenService.writeCookie(res, TokenUser.Customer, refreshToken, 15);
+    await this.tokenService.writeCookie(
+      res,
+      TokenUser.Customer,
+      refreshToken,
+      15,
+    );
 
     return successRes({ token: accessToken });
   }
-   // ============================ FIND ALL PAGENATION ============================
-    async findAllWithPagination(
-      query: string = '',
-      limit: number = 10,
-      page: number = 1,
-    ) {
-      // fix skip and take
-      const { take, skip } = toSkipTake(page, limit);
-  
-      // count
-      const [user, count] = await this.customerRepo.findAndCount({
-        where: {
-          name: ILike(`%${query}%`),
-          is_deleted: false,
-          role: Roles.CUSTOMER,
-        } as unknown as FindOptionsWhere<CustomerEntity>,
-        order: {
-          createdAt: 'DESC' as any,
-        },
-        select: {
-          id: true,
-          name: true,
-          email:true,
-          role: true,
-          balance: true,
-        } as any,
-        take,
-        skip,
-      });
-  
-      // total page
-      const total_page = Math.ceil(count / limit);
-  
-      // return success
-      return successRes({
-        data: user,
-        mete: {
-          page,
-          total_page,
-          total_count: count,
-          hasNextPage: total_page > page,
-        },
-      });
-    }
 
+  // ============================ FIND ALL PAGENATION ============================
+
+  async findAllWithPagination(
+    query: string = '',
+    limit: number = 10,
+    page: number = 1,
+  ) {
+    // fix skip and take
+    const { take, skip } = toSkipTake(page, limit);
+
+    // count
+    const [user, count] = await this.customerRepo.findAndCount({
+      where: {
+        name: ILike(`%${query}%`),
+        is_deleted: false,
+        role: Roles.CUSTOMER,
+      } as unknown as FindOptionsWhere<CustomerEntity>,
+      order: {
+        createdAt: 'DESC' as any,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        balance: true,
+      } as any,
+      take,
+      skip,
+    });
+
+    // total page
+    const total_page = Math.ceil(count / limit);
+
+    // return success
+    return successRes({
+      data: user,
+      mete: {
+        page,
+        total_page,
+        total_count: count,
+        hasNextPage: total_page > page,
+      },
+    });
+  }
 }

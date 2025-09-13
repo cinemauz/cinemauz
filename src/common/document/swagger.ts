@@ -27,7 +27,7 @@ export const customerData = {
   createdAt: '2025-09-10T15:06:07.283Z',
   updatedAt: '2025-09-10T15:06:07.283Z',
   name: 'John Doe',
-  username: 'johndoe123',
+  email: 'www.example@gmail.com',
   hashed_password:
     '$2b$07$GaDc.BaRiBbJdkuuIjB7MuCfN6/OK2ZuraJrrX6.4OY2BXvgm8tMK',
   role: 'CUSTOMER',
@@ -38,7 +38,7 @@ export const customerData = {
 export const customerAll = {
   id: 5,
   name: 'John Doe',
-  username: 'johndoe1231',
-  role: 'ADMIN',
+  email: 'www.example@gmail.com',
+  role: 'CUSTOMER',
   balance: '0',
 };
