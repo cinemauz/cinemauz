@@ -23,7 +23,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SwaggerApi } from 'src/common/swagger-apiresponse/swagger-response';
-import { adminAll, adminData, tokenRes } from 'src/common/document/swagger';
+import {
+  adminAll,
+  adminData,
+  tokenRes,
+} from 'src/common/document/swagger.user';
 import { AuthGuard } from 'src/common/guard/auth.guard';
 import { RolesGuard } from 'src/common/guard/role.guard';
 import { AccessRoles } from 'src/common/decorator/roles.decorator';
@@ -44,7 +48,7 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly authService: AuthService,
-  ) { }
+  ) {}
 
   // ================================= CREATED =================================
 
@@ -142,11 +146,16 @@ export class AdminController {
 
   // UPDATE PASSWORD
   updatePassoword(
-    @Param('id',ParseIntPipe) id:number,
-    @Body() updatePassword:UpdatePassword
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePassword: UpdatePassword,
   ) {
-    const {old_password,new_password}=updatePassword
-    return this.authService.UpdatePassword(old_password,new_password,id,this.adminService.getRepository)
+    const { old_password, new_password } = updatePassword;
+    return this.authService.UpdatePassword(
+      old_password,
+      new_password,
+      id,
+      this.adminService.getRepository,
+    );
   }
   // ================================= GET ALL PAGENATION =================================
   // SWAGGER
@@ -163,7 +172,6 @@ export class AdminController {
 
   // PAGENATION
   findAllWithPagenation(@Query() queryDto: QueryPagination) {
-
     const { query, limit, page } = queryDto;
 
     return this.adminService.findAllWithPagination(query, limit, page);
@@ -173,6 +181,7 @@ export class AdminController {
   // SWAGGER
   @ApiOperation({ summary: 'Get All Admin' })
   @ApiResponse(SwaggerApi.ApiSuccessResponse([adminAll, adminAll]))
+    
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
   @AccessRoles(Roles.SUPERADMIN)
@@ -195,7 +204,7 @@ export class AdminController {
       order: { createdAt: 'DESC' },
     });
   }
-  
+
   // ================================= GET ONE =================================
 
   // SWAGGER

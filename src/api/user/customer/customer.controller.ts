@@ -23,7 +23,7 @@ import {
   customerAll,
   customerData,
   tokenRes,
-} from 'src/common/document/swagger';
+} from 'src/common/document/swagger.user';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';

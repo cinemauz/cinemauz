@@ -1,8 +1,4 @@
-import {
-  DeepPartial,
-  ObjectLiteral,
-  Repository,
-} from 'typeorm';
+import { DeepPartial, ObjectLiteral, Repository } from 'typeorm';
 import { IFindOption, ISuccessRes } from '../response/success.interface';
 import { successRes } from '../response/succesRes';
 import { NotFoundException } from '@nestjs/common';
@@ -30,8 +26,8 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ FIND BY ============================
-  async findOneBY(options?: IFindOption<Entity>): Promise<ISuccessRes> {
 
+  async findOneBY(options?: IFindOption<Entity>): Promise<ISuccessRes> {
     // find option
     const data = await this.baseRepo.find({
       select: options?.select || {},
@@ -53,9 +49,8 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
     id: number,
     options?: IFindOption<Entity>,
   ): Promise<ISuccessRes> {
-
     // find by id
-    if(this.baseRepo.metadata.name=='admin'){
+    if (this.baseRepo.metadata.name == 'admin') {
       if (id == config.SUPERADMIN.ID) {
         throw new NotFoundException('You could not show Super Admin');
       }
@@ -81,7 +76,6 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
 
   // ============================ UPDATE ============================
   async update(id: number, dto: UpdateDto): Promise<ISuccessRes> {
-
     // check id
     await this.findOneById(id);
 
@@ -95,7 +89,6 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
 
   // ============================ DELETE ============================
   async remove(id: number): Promise<ISuccessRes> {
-
     // check id
     await this.findOneById(id);
 
@@ -108,12 +101,13 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   // ============================ SOFT DELETE ============================
 
   async softDelete(id: number): Promise<ISuccessRes> {
-
     // check id
     await this.findOneById(id);
 
     // soft delete is is_deleted=true
-    await this.baseRepo.update(id, { is_deleted: true } as any);
+    await this.baseRepo.update(id, {
+      is_deleted: true,
+    } as unknown as QueryDeepPartialEntity<Entity>);
 
     return successRes({});
   }
