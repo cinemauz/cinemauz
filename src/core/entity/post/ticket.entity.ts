@@ -21,6 +21,8 @@ export class TicketEntity extends BaseEntity {
   @JoinColumn({ name: 'room_id' })
   room: RoomEntity;
 
-  @OneToMany(() => OrderEntity, (order) => order.ticket)
+  @OneToMany(() => OrderEntity, (order) => order.ticket, {
+    cascade: true,
+  })
   orders: OrderEntity[];
 }

@@ -16,6 +16,8 @@ export class RoomEntity extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
-  @OneToMany(() => TicketEntity, (ticket) => ticket.room)
+  @OneToMany(() => TicketEntity, (ticket) => ticket.room, {
+    cascade: true,
+  })
   tickets: TicketEntity[];
 }

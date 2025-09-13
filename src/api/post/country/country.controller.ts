@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CountryService } from './country.service';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
@@ -30,14 +39,17 @@ export class CountryController {
 
   // CREATE
   create(@Body() createCountryDto: CreateCountryDto) {
-    // return this.countryService.createGenre(createGenreDto);
+    return this.countryService.createCountry(createCountryDto);
   }
   // ================================ FIND ALL ================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Get All Country' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse([PostSawgger.countryAll, PostSawgger.countryAll]),
+    SwaggerApi.ApiSuccessResponse([
+      PostSawgger.countryAll,
+      PostSawgger.countryAll,
+    ]),
   )
 
   // ENDPOINT
@@ -97,7 +109,7 @@ export class CountryController {
 
   // UPDATE
   update(@Param('id') id: number, @Body() updateCountryDto: UpdateCountryDto) {
-    // return this.countryService.updateGenre(+id, updateGenreDto);
+    return this.countryService.updateCountry(+id, updateCountryDto);
   }
 
   // ================================ SOFT DELETE ================================
@@ -112,6 +124,7 @@ export class CountryController {
 
   // ENDPOINT
   @Patch('delete/:id')
+  @ApiBearerAuth()
 
   //SOFT DELETE
   softRemove(@Param('id') id: number) {
@@ -130,6 +143,7 @@ export class CountryController {
 
   // ENDPOINT
   @Delete(':id')
+  @ApiBearerAuth()
 
   //DELETE
   remove(@Param('id') id: number) {

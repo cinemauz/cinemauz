@@ -121,6 +121,7 @@ export class GenreController {
 
   // ENDPOINT
   @Patch('delete/:id')
+  @ApiBearerAuth()
 
   //SOFT DELETE
   softRemove(@Param('id') id: number) {
@@ -135,10 +136,11 @@ export class GenreController {
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
 
   // ENDPOINT
   @Delete(':id')
+  @ApiBearerAuth()
 
   //DELETE
   remove(@Param('id') id: number) {

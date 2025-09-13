@@ -92,7 +92,7 @@ export class CustomerController {
   // ================================= FORGET PASSWORD (1/3) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Forget password' })
+  @ApiOperation({ summary: 'Forget password (1/3)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { email: 'www.example@gmail.com' },
@@ -111,7 +111,7 @@ export class CustomerController {
   // ================================= CONFIRM OTP FOR FORGET PASSWORD (2/3) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Confirm password for update' })
+  @ApiOperation({ summary: 'Confirm password for update (2/3)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { link: `http:localhost:3000/update-password/url` },
@@ -130,7 +130,7 @@ export class CustomerController {
   // ================================= UPDATE PASSWORD FOR FORGET PASSWORD (3/3) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Update password enter new password' })
+  @ApiOperation({ summary: 'Update password enter new password (3/3)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       {},
@@ -272,12 +272,17 @@ export class CustomerController {
   findAll() {
     return this.customerService.findAll({
       where: { is_deleted: false, role: Roles.CUSTOMER },
+      relations: { reviews: true },
       select: {
         id: true,
         email: true,
         role: true,
-        balance: true,
         name: true,
+        reviews: {
+          comment: true,
+          createdAt: true,
+          rating: true,
+        },
       },
       order: { createdAt: 'DESC' },
     });
@@ -299,7 +304,25 @@ export class CustomerController {
 
   // FIND ONE
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.customerService.findOneById(+id);
+    return this.customerService.findOneById(+id, {
+      where: { is_deleted: false, role: Roles.CUSTOMER },
+      relations: { reviews: true },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        balance: true,
+        name: true,
+        hashed_password: true,
+        createdAt: true,
+        is_active: true,
+        reviews: {
+          comment: true,
+          createdAt: true,
+          rating: true,
+        },
+      },
+    });
   }
 
   // ================================= UPDATE =================================

@@ -19,33 +19,45 @@ export class GenreService extends BaseService<
   ) {
     super(genreRepo);
   }
+
   // ============================ CREATE GENRE ============================
+
   async createGenre(createGenreDto: CreateGenreDto) {
     const { name } = createGenreDto;
 
     // check exist name
     const existName = await this.genreRepo.findOne({ where: { name } });
-    if (existName) {
-      throw new ConflictException(
-        `this name => ${name} alreaady exist on Genre`,
-      );
+
+    // check is_deleted
+    if (!existName?.is_deleted) {
+      if (existName) {
+        throw new ConflictException(
+          `this name => ${name} alreaady exist on Genre`,
+        );
+      }
+    } else {
+      await this.remove(existName.id);
     }
 
     // create
     return super.create(createGenreDto);
   }
 
-  // ============================ CREATE GENRE ============================
+  // ============================ UPDATE GENRE ============================
   async updateGenre(id: number, updateGenreDto: UpdateGenreDto) {
     const { name } = updateGenreDto;
 
     // check exist name
     if (name) {
       const existName = await this.genreRepo.findOne({ where: { name } });
-      if (existName) {
-        throw new ConflictException(
-          `this name => ${name} alreaady exist on Genre`,
-        );
+      if (!existName?.is_deleted) {
+        if (existName) {
+          throw new ConflictException(
+            `this name => ${name} alreaady exist on Genre`,
+          );
+        }
+      } else {
+        await this.remove(existName.id);
       }
     }
 

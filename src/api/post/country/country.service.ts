@@ -18,34 +18,47 @@ export class CountryService extends BaseService<
   ) {
     super(countryRepo);
   }
+
   // ============================ CREATE COUNTRY ============================
+
   async createCountry(CreateCountryDto: CreateCountryDto) {
     const { name } = CreateCountryDto;
 
     // check exist name
     const existName = await this.countryRepo.findOne({ where: { name } });
-    if (existName) {
-      throw new ConflictException(
-        `this name => ${name} alreaady exist on Country`,
-      );
+
+    // check is_deleted
+    if (!existName?.is_deleted) {
+      if (existName) {
+        throw new ConflictException(
+          `this name => ${name} alreaady exist on Country`,
+        );
+      }
+    } else {
+      await this.remove(existName.id);
     }
 
     // create
     return super.create(CreateCountryDto);
   }
 
-  // ============================ CREATE COUNTRY ============================
+  // ============================ UPDATE COUNTRY ============================
+
   async updateCountry(id: number, UpdateCountryDto: UpdateCountryDto) {
     const { name } = UpdateCountryDto;
 
     // check exist name
     if (name) {
       const existName = await this.countryRepo.findOne({ where: { name } });
-      if (existName) {
-        throw new ConflictException(
-          `this name => ${name} alreaady exist on Country`,
-        );
-      }
+       if (!existName?.is_deleted) {
+         if (existName) {
+           throw new ConflictException(
+             `this name => ${name} alreaady exist on Country`,
+           );
+         }
+       } else {
+         await this.remove(existName.id);
+       }
     }
 
     // update

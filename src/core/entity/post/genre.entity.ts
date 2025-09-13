@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/common/database/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { MovieEntity } from './movie.entity';
 
 @Entity('genre')
 export class GenreEntity extends BaseEntity {
@@ -7,4 +8,11 @@ export class GenreEntity extends BaseEntity {
 
   @Column({ type: 'varchar', unique: true })
   name: string;
+
+  // -------------------- MOVIES --------------------
+
+  @OneToMany(() => MovieEntity, (movie) => movie.genre, {
+    cascade: true,
+  })
+  movies: MovieEntity[];
 }

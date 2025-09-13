@@ -1,4 +1,11 @@
-import { DeepPartial, ObjectLiteral, Repository } from 'typeorm';
+import {
+  DeepPartial,
+  Entity,
+  FindOptionsWhere,
+  FindOptionsWhereProperty,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 import { IFindOption, ISuccessRes } from '../response/success.interface';
 import { successRes } from '../response/succesRes';
 import { NotFoundException } from '@nestjs/common';
@@ -13,13 +20,23 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
     return this.baseRepo;
   }
   // ============================ CREATE ============================
+
   async create(dto: CreateDto): Promise<ISuccessRes> {
+    // make schema
     const entity = this.baseRepo.create(dto as DeepPartial<Entity>);
-    const data = this.baseRepo.save(entity);
-    return successRes(entity);
+
+    // save database
+    const data = await this.baseRepo.save(entity);
+
+    // unhhide is_deleted
+    delete data.is_deleted;
+
+    // return success
+    return successRes(data);
   }
 
   // ============================ FIND ALL ============================
+
   async findAll(options?: IFindOption<Entity>): Promise<ISuccessRes> {
     const data = await this.baseRepo.find({ ...options });
     return successRes(data);
@@ -45,6 +62,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ FIND BY ID ============================
+
   async findOneById(
     id: number,
     options?: IFindOption<Entity>,
@@ -74,7 +92,25 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
     return successRes(data);
   }
 
+  // ============================ FIND BY ID ON REPOSITORY ============================
+
+  async findByIdRepository<T extends ObjectLiteral>(
+    repository: Repository<T>,
+    id: number,
+  ): Promise<ISuccessRes> {
+    const data = await repository.findOne({
+      where: { id } as unknown as Entity,
+    });
+    if (!data) {
+      throw new NotFoundException(
+        `not found this id => ${id} on ${String(repository.metadata.name).split('Entity')[0]}`,
+      );
+    }
+    return successRes(data);
+  }
+
   // ============================ UPDATE ============================
+
   async update(id: number, dto: UpdateDto): Promise<ISuccessRes> {
     // check id
     await this.findOneById(id);
@@ -88,9 +124,18 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   }
 
   // ============================ DELETE ============================
+
   async remove(id: number): Promise<ISuccessRes> {
     // check id
-    await this.findOneById(id);
+    const exist = await this.baseRepo.findOne({
+      where: { id } as unknown as Entity,
+    });
+
+    if (!exist) {
+      throw new NotFoundException(
+        `not found this id => ${id} on ${String(this.baseRepo.metadata.name).split('Entity')[0]}`,
+      );
+    }
 
     // delete
     await this.baseRepo.delete(id);
@@ -98,6 +143,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
     // return success
     return successRes({});
   }
+
   // ============================ SOFT DELETE ============================
 
   async softDelete(id: number): Promise<ISuccessRes> {

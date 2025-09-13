@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/database/base.entity';
 import { Roles } from 'src/common/enum/Roles';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { MovieEntity } from '../post/movie.entity';
 
 @Entity('admin')
 export class AdminEntity extends BaseEntity {
@@ -21,4 +22,9 @@ export class AdminEntity extends BaseEntity {
 
   @Column({ type: 'decimal', default: 0 })
   balance: number;
+
+  @OneToMany(() => MovieEntity, (movie) => movie.admin, {
+    cascade: true,
+  })
+  movies: MovieEntity[];
 }
