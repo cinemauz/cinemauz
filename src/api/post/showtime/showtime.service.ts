@@ -1,26 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ShowtimeEntity } from 'src/core/entity/post/showtime.entity';
+import { BaseService } from 'src/infrastructure/base/base.service.js';
 import { CreateShowtimeDto } from './dto/create-showtime.dto';
 import { UpdateShowtimeDto } from './dto/update-showtime.dto';
 
 @Injectable()
-export class ShowtimeService {
-  create(createShowtimeDto: CreateShowtimeDto) {
-    return 'This action adds a new showtime';
-  }
-
-  findAll() {
-    return `This action returns all showtime`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} showtime`;
-  }
-
-  update(id: number, updateShowtimeDto: UpdateShowtimeDto) {
-    return `This action updates a #${id} showtime`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} showtime`;
+export class ShowtimeService extends BaseService<
+  CreateShowtimeDto,
+  UpdateShowtimeDto,
+  ShowtimeEntity
+> {
+  constructor(
+    @InjectRepository(ShowtimeEntity)
+    private readonly showtimeRepo: Repository<ShowtimeEntity>,
+  ) {
+    super(showtimeRepo);
   }
 }

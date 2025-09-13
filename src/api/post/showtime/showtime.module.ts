@@ -1,13 +1,37 @@
-import { Module } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { ShowtimeService } from './showtime.service';
-import { ShowtimeController } from './showtime.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ShowtimeEntity } from 'src/core/entity/post/showtime.entity';
+import { CreateShowtimeDto } from './dto/create-showtime.dto';
+import { UpdateShowtimeDto } from './dto/update-showtime.dto';
 
-@Module({
-  imports:[TypeOrmModule.forFeature([ShowtimeEntity])],
-  controllers: [ShowtimeController],
-  providers: [ShowtimeService],
-  exports:[ShowtimeService]
-})
-export class ShowtimeModule {}
+@Controller('showtime')
+export class ShowtimeController {
+  constructor(private readonly showtimeService: ShowtimeService) {}
+
+  @Post()
+  create(@Body() createShowtimeDto: CreateShowtimeDto) {
+    return this.showtimeService.create(createShowtimeDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.showtimeService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.showtimeService.findOneById(id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: number,
+    @Body() updateShowtimeDto: UpdateShowtimeDto,
+  ) {
+    return this.showtimeService.update(id, updateShowtimeDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.showtimeService.remove(id);
+  }
+}
