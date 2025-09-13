@@ -1,28 +1,52 @@
-import { BaseEntity } from "src/common/database/base.entity";
-import { Roles } from "src/common/enum/Roles";
-import { Column, Entity, OneToMany } from "typeorm";
-import { OrderEntity } from "../post/order.entity";
+import { BaseEntity } from 'src/common/database/base.entity';
+import { Roles } from 'src/common/enum/Roles';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { OrderEntity } from '../post/order.entity';
+import { ReviewEntity } from '../post/review.entity';
 
 @Entity('customer')
 export class CustomerEntity extends BaseEntity {
+  // -------------------- NAME --------------------
+
   @Column({ type: 'varchar' })
   name: string;
+
+  // -------------------- EMAIL --------------------
 
   @Column({ type: 'varchar', unique: true })
   email: string;
 
+  // -------------------- HASHD PASSWORD --------------------
+
   @Column({ type: 'varchar' })
   hashed_password: string;
+
+  // -------------------- ROLE --------------------
 
   @Column({ type: 'enum', enum: Roles, default: Roles.CUSTOMER })
   role: string;
 
+  // -------------------- IS ACTIVE --------------------
+
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
+
+  // -------------------- BALANCE --------------------
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   balance: number;
 
-  @OneToMany(() => OrderEntity, (order) => order.customer)
+  // -------------------- ORDER RELATION --------------------
+
+  @OneToMany(() => OrderEntity, (order) => order.customer, {
+    cascade: true,
+  })
   orders: OrderEntity[];
+
+  // -------------------- REVIEW RELATION --------------------
+
+  @OneToMany(() => ReviewEntity, (review) => review.customer, {
+    cascade: true,
+  })
+  reviews: ReviewEntity[];
 }

@@ -8,26 +8,26 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { GenreService } from './genre.service';
-import { CreateGenreDto } from './dto/create-genre.dto';
-import { UpdateGenreDto } from './dto/update-genre.dto';
+import { CountryService } from './country.service';
+import { CreateCountryDto } from './dto/create-country.dto';
+import { UpdateCountryDto } from './dto/update-country.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { SwaggerApi } from 'src/common/swagger-apiresponse/swagger-response';
 import { PostSawgger } from 'src/common/document/swagger.post';
-import { RolesGuard } from 'src/common/guard/role.guard';
+import { SwaggerApi } from 'src/common/swagger-apiresponse/swagger-response';
 import { AuthGuard } from 'src/common/guard/auth.guard';
+import { RolesGuard } from 'src/common/guard/role.guard';
 import { AccessRoles } from 'src/common/decorator/roles.decorator';
 import { Roles } from 'src/common/enum/Roles';
 
-@Controller('genre')
-export class GenreController {
-  constructor(private readonly genreService: GenreService) {}
+@Controller('country')
+export class CountryController {
+  constructor(private readonly countryService: CountryService) {}
 
   // ================================ CREATE ================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Create Genre' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.genreDate))
+  @ApiOperation({ summary: 'Create Country' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.countryDate))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -38,15 +38,18 @@ export class GenreController {
   @ApiBearerAuth()
 
   // CREATE
-  create(@Body() createGenreDto: CreateGenreDto) {
-    return this.genreService.createGenre(createGenreDto);
+  create(@Body() createCountryDto: CreateCountryDto) {
+    return this.countryService.createCountry(createCountryDto);
   }
   // ================================ FIND ALL ================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Get All Genre' })
+  @ApiOperation({ summary: 'Get All Country' })
   @ApiResponse(
-    SwaggerApi.ApiSuccessResponse([PostSawgger.genreAll, PostSawgger.genreAll]),
+    SwaggerApi.ApiSuccessResponse([
+      PostSawgger.countryAll,
+      PostSawgger.countryAll,
+    ]),
   )
 
   // ENDPOINT
@@ -54,7 +57,7 @@ export class GenreController {
 
   //FIND ALL
   findAll() {
-    return this.genreService.findAll({
+    return this.countryService.findAll({
       relations: { movies: true },
       where: {
         is_deleted: false,
@@ -77,15 +80,15 @@ export class GenreController {
   // ================================ GET ONE ================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Get One Genre' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.genreDate))
+  @ApiOperation({ summary: 'Get One Country' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.countryDate))
 
   // ENDPOINT
   @Get(':id')
 
   // FIND ONE
   findOne(@Param('id') id: number) {
-    return this.genreService.findOneBY({
+    return this.countryService.findOneBY({
       relations: { movies: true },
       where: {
         id,
@@ -111,8 +114,8 @@ export class GenreController {
   // ================================ UPDATE ================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Update Genre' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.genreDate))
+  @ApiOperation({ summary: 'Update Country' })
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.countryDate))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
@@ -123,14 +126,14 @@ export class GenreController {
   @ApiBearerAuth()
 
   // UPDATE
-  update(@Param('id') id: number, @Body() updateGenreDto: UpdateGenreDto) {
-    return this.genreService.updateGenre(+id, updateGenreDto);
+  update(@Param('id') id: number, @Body() updateCountryDto: UpdateCountryDto) {
+    return this.countryService.updateCountry(+id, updateCountryDto);
   }
 
   // ================================ SOFT DELETE ================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Soft Delete genre' })
+  @ApiOperation({ summary: 'Soft Delete Country' })
   @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
 
   // GUARD
@@ -143,13 +146,13 @@ export class GenreController {
 
   //SOFT DELETE
   softRemove(@Param('id') id: number) {
-    return this.genreService.softDelete(+id);
+    return this.countryService.softDelete(+id);
   }
 
   // ================================ DELETE ================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Delete Genre' })
+  @ApiOperation({ summary: 'Delete Country' })
   @ApiResponse(SwaggerApi.ApiSuccessResponse({}))
 
   // GUARD
@@ -162,6 +165,6 @@ export class GenreController {
 
   //DELETE
   remove(@Param('id') id: number) {
-    return this.genreService.remove(+id);
+    return this.countryService.remove(+id);
   }
 }

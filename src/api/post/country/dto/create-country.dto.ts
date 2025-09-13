@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateGenreDto {
-  // -------------------- NAME --------------------
+export class CreateCountryDto {
+  // ----------------- NAME -----------------
   @ApiProperty({
-    description: 'Janr nomi',
-    example: 'Action',
+    description: 'Mamlakat nomi',
+    example: 'Uzbeksiton',
   })
   @IsString()
   @IsNotEmpty()

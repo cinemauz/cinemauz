@@ -1,26 +1,67 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
+import { BaseService } from 'src/infrastructure/base/base.service';
+import { GenreEntity } from 'src/core/entity/post/genre.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { successRes } from 'src/infrastructure/response/succesRes';
 
 @Injectable()
-export class GenreService {
-  create(createGenreDto: CreateGenreDto) {
-    return 'This action adds a new genre';
+export class GenreService extends BaseService<
+  CreateGenreDto,
+  UpdateGenreDto,
+  GenreEntity
+> {
+  constructor(
+    @InjectRepository(GenreEntity)
+    private readonly genreRepo: Repository<GenreEntity>,
+  ) {
+    super(genreRepo);
   }
 
-  findAll() {
-    return `This action returns all genre`;
+  // ============================ CREATE GENRE ============================
+
+  async createGenre(createGenreDto: CreateGenreDto) {
+    const { name } = createGenreDto;
+
+    // check exist name
+    const existName = await this.genreRepo.findOne({ where: { name } });
+
+    // check is_deleted
+    if (!existName?.is_deleted) {
+      if (existName) {
+        throw new ConflictException(
+          `this name => ${name} alreaady exist on Genre`,
+        );
+      }
+    } else {
+      await this.remove(existName.id);
+    }
+
+    // create
+    return super.create(createGenreDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} genre`;
-  }
+  // ============================ UPDATE GENRE ============================
+  async updateGenre(id: number, updateGenreDto: UpdateGenreDto) {
+    const { name } = updateGenreDto;
 
-  update(id: number, updateGenreDto: UpdateGenreDto) {
-    return `This action updates a #${id} genre`;
-  }
+    // check exist name
+    if (name) {
+      const existName = await this.genreRepo.findOne({ where: { name } });
+      if (!existName?.is_deleted) {
+        if (existName) {
+          throw new ConflictException(
+            `this name => ${name} alreaady exist on Genre`,
+          );
+        }
+      } else {
+        await this.remove(existName.id);
+      }
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} genre`;
+    // update
+    return super.update(id, updateGenreDto);
   }
 }

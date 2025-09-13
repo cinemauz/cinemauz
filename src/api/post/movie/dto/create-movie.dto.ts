@@ -24,6 +24,7 @@ export class CreateMovieDto {
   title: string;
 
   // ------------------------------ DESCRIPTION ------------------------------
+
   @ApiPropertyOptional({
     description: 'Filmnig tavsifi',
     example: 'A mind-bending thriller about dreams within dreams.',
@@ -33,6 +34,7 @@ export class CreateMovieDto {
   description?: string;
 
   // ------------------------------ DURATION ------------------------------
+
   @ApiProperty({
     description: 'Filmnig davomiyligi (HH:mm:ss formatida)',
     example: '02:15:20',
@@ -44,15 +46,19 @@ export class CreateMovieDto {
   duration: string;
 
   // ------------------------------ REALASE DATE ------------------------------
+
   @ApiPropertyOptional({
-    description: 'Filmnig chiqish sanasi',
+    description: 'Filmnig chiqish sanasi (YYYY-MM-DD formatida)',
     example: '2010-07-16',
   })
   @IsOptional()
-  @IsDateString()
-  realase_date?: Date;
+  @Matches(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, {
+    message: 'realase_date must be in YYYY-MM-DD format',
+  })
+  realase_date?: string;
 
   // ------------------------------ IMAGE URL ------------------------------
+
   @ApiProperty({
     description: 'Filmnig rasmi URL',
     example: 'https://example.com/movie-image.jpg',
@@ -62,6 +68,7 @@ export class CreateMovieDto {
   image_url: string;
 
   // ------------------------------ VIDEO URL ------------------------------
+
   @ApiProperty({
     description: 'Filmnig video URL',
     example: 'https://example.com/movie-video.mp4',
@@ -71,6 +78,7 @@ export class CreateMovieDto {
   video_url: string;
 
   // ------------------------------ LANGUAGES ------------------------------
+
   @ApiPropertyOptional({
     description: 'Filmnig tili',
     enum: Languages,
@@ -80,15 +88,17 @@ export class CreateMovieDto {
   language?: Languages;
 
   // ------------------------------ COUNTRY ------------------------------
+
   @ApiPropertyOptional({
-    description: 'Filmnig mamlakati',
-    enum: Country,
+    description: 'Filmnig mamlakati ID',
+    example: 1,
   })
-  @IsOptional()
-  @IsEnum(Country)
-  country?: Country;
+  @IsInt()
+  @IsNotEmpty()
+  country_id: number;
 
   // ------------------------------ GENRE ID ------------------------------
+
   @ApiProperty({
     description: 'Filmnig janri ID',
     example: 1,
@@ -98,6 +108,7 @@ export class CreateMovieDto {
   genre_id: number;
 
   // ------------------------------ ADMIN ID ------------------------------
+
   @ApiProperty({
     description: 'Filmnig admin ID',
     example: 1,

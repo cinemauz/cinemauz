@@ -23,7 +23,7 @@ import {
   customerAll,
   customerData,
   tokenRes,
-} from 'src/common/document/swagger';
+} from 'src/common/document/swagger.user';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -51,10 +51,10 @@ export class CustomerController {
     private readonly authService: AuthService,
   ) {}
 
-  // ================================= REGIRSTRATION =================================
+  // ================================= REGIRSTRATION (1/2) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Created Customer' })
+  @ApiOperation({ summary: 'Created Customer (1/2)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { email: 'www.example@gmail.com' },
@@ -70,10 +70,10 @@ export class CustomerController {
     return this.customerService.createCustomer(createCustomerDto);
   }
 
-  // ================================= CONFRIM OTP REGIRSTRATION  =================================
+  // ================================= CONFRIM OTP REGIRSTRATION (2/2) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Confirm OTP' })
+  @ApiOperation({ summary: 'Confirm OTP (2/2)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { customerData },
@@ -92,7 +92,7 @@ export class CustomerController {
   // ================================= FORGET PASSWORD (1/3) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Forget password' })
+  @ApiOperation({ summary: 'Forget password (1/3)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { email: 'www.example@gmail.com' },
@@ -111,7 +111,7 @@ export class CustomerController {
   // ================================= CONFIRM OTP FOR FORGET PASSWORD (2/3) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Confirm password for update' })
+  @ApiOperation({ summary: 'Confirm password for update (2/3)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { link: `http:localhost:3000/update-password/url` },
@@ -130,7 +130,7 @@ export class CustomerController {
   // ================================= UPDATE PASSWORD FOR FORGET PASSWORD (3/3) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Update password enter new password' })
+  @ApiOperation({ summary: 'Update password enter new password (3/3)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       {},
@@ -272,12 +272,17 @@ export class CustomerController {
   findAll() {
     return this.customerService.findAll({
       where: { is_deleted: false, role: Roles.CUSTOMER },
+      relations: { reviews: true },
       select: {
         id: true,
         email: true,
         role: true,
-        balance: true,
         name: true,
+        reviews: {
+          comment: true,
+          createdAt: true,
+          rating: true,
+        },
       },
       order: { createdAt: 'DESC' },
     });
@@ -299,7 +304,25 @@ export class CustomerController {
 
   // FIND ONE
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.customerService.findOneById(+id);
+    return this.customerService.findOneById(+id, {
+      where: { is_deleted: false, role: Roles.CUSTOMER },
+      relations: { reviews: true },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        balance: true,
+        name: true,
+        hashed_password: true,
+        createdAt: true,
+        is_active: true,
+        reviews: {
+          comment: true,
+          createdAt: true,
+          rating: true,
+        },
+      },
+    });
   }
 
   // ================================= UPDATE =================================

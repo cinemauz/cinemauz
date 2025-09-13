@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDateString,
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
   Matches,
   Min,
 } from 'class-validator';
@@ -28,7 +28,7 @@ export class CreateShowtimeDto {
   @IsInt()
   @Min(0)
   @IsNotEmpty()
-  stock_quantity: number;
+  ticket_quantity: number;
 
   // ------------------------------ ROOM ID ------------------------------
   @ApiProperty({
@@ -42,26 +42,27 @@ export class CreateShowtimeDto {
   // ------------------------------ START TIME ------------------------------
   @ApiProperty({
     description: 'Filmnig boshlanish vaqti (HH:mm:ss formatida)',
-    example: '13:00.00',
+    example: '13:00:00',
   })
   @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/, {
-    message: 'Duration must be in HH:mm:ss format',
+    message: 'Begin movie time must be in HH:mm:ss format',
   })
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
-  start_time: Date;
+  start_time: string;
 
   // ------------------------------ END TIME ------------------------------
+
   @ApiProperty({
     description: 'Filmnig tugash vaqti (HH:mm:ss formatida)',
-    example: '15:00.00',
+    example: '15:00:00',
   })
   @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/, {
-    message: 'Duration must be in HH:mm:ss format',
+    message: 'End movie time must be in HH:mm:ss format',
   })
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
-  end_time: Date;
+  end_time: string;
 
   // ------------------------------ IS ACTIVE ------------------------------
   @ApiPropertyOptional({
@@ -71,4 +72,10 @@ export class CreateShowtimeDto {
   @IsOptional()
   @IsBoolean()
   is_active?: boolean;
+
+  // ------------------------------ SEAT QUANTITY------------------------------
+
+  @IsInt()
+  @IsOptional()
+  seat_qantity?: number;
 }

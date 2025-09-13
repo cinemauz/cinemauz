@@ -19,6 +19,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { RedisService } from 'src/infrastructure/redis/Redis';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { Email } from 'src/common/enum/email';
+import { CountryModule } from './post/country/country.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { Email } from 'src/common/enum/email';
     PaymentModule,
     WalletModule,
     AuthModule,
+    CountryModule,
   ],
   providers: [CryptoService, RedisService],
 })
