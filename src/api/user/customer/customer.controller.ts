@@ -51,10 +51,10 @@ export class CustomerController {
     private readonly authService: AuthService,
   ) {}
 
-  // ================================= REGIRSTRATION =================================
+  // ================================= REGIRSTRATION (1/2) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Created Customer' })
+  @ApiOperation({ summary: 'Created Customer (1/2)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { email: 'www.example@gmail.com' },
@@ -70,10 +70,10 @@ export class CustomerController {
     return this.customerService.createCustomer(createCustomerDto);
   }
 
-  // ================================= CONFRIM OTP REGIRSTRATION  =================================
+  // ================================= CONFRIM OTP REGIRSTRATION (2/2) =================================
 
   // SWAGGER
-  @ApiOperation({ summary: 'Confirm OTP' })
+  @ApiOperation({ summary: 'Confirm OTP (2/2)' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
       { customerData },

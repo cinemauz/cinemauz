@@ -3,7 +3,7 @@ import { BaseEntity } from 'src/common/database/base.entity';
 import { CustomerEntity } from 'src/core/entity/users/customer.entity';
 import { MovieEntity } from 'src/core/entity/post/movie.entity';
 
-@Entity('reviews')
+@Entity('review')
 export class ReviewEntity extends BaseEntity {
   // ---------------------------- COMMENT ----------------------------
 

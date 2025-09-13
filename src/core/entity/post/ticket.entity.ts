@@ -3,7 +3,7 @@ import { BaseEntity } from 'src/common/database/base.entity';
 import { RoomEntity } from './room.entity';
 import { OrderEntity } from './order.entity';
 
-@Entity('tickets')
+@Entity('ticket')
 export class TicketEntity extends BaseEntity {
   @Column()
   seat_number: string;
@@ -16,10 +16,6 @@ export class TicketEntity extends BaseEntity {
 
   @Column({ type: 'boolean', default: true })
   status: boolean;
-
-  @ManyToOne(() => RoomEntity, (room) => room.tickets, { eager: true })
-  @JoinColumn({ name: 'room_id' })
-  room: RoomEntity;
 
   @OneToMany(() => OrderEntity, (order) => order.ticket, {
     cascade: true,

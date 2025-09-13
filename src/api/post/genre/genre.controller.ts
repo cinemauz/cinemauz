@@ -55,12 +55,21 @@ export class GenreController {
   //FIND ALL
   findAll() {
     return this.genreService.findAll({
+      relations: { movies: true },
       where: {
         is_deleted: false,
       },
       select: {
         id: true,
         name: true,
+        movies: {
+          createdAt: true,
+          image_url: true,
+          video_url: true,
+          id: true,
+          title: true,
+          duration: true,
+        },
       },
       order: { createdAt: 'DESC' },
     });
@@ -77,6 +86,7 @@ export class GenreController {
   // FIND ONE
   findOne(@Param('id') id: number) {
     return this.genreService.findOneBY({
+      relations: { movies: true },
       where: {
         id,
         is_deleted: false,
@@ -86,6 +96,14 @@ export class GenreController {
         updatedAt: true,
         id: true,
         name: true,
+        movies: {
+          createdAt: true,
+          image_url: true,
+          video_url: true,
+          id: true,
+          title: true,
+          duration: true,
+        },
       },
       order: { createdAt: 'DESC' },
     });

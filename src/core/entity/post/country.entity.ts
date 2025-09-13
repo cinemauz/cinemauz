@@ -11,7 +11,7 @@ export class CountryEntity extends BaseEntity {
 
   // -------------------- MOVIES --------------------
   
-  @OneToMany(() => MovieEntity, (movie) => movie.genre, {
+  @OneToMany(() => MovieEntity, (movie) => movie.country, {
     cascade:true
   })
   movies: MovieEntity[];

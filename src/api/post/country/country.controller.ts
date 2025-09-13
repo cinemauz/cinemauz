@@ -58,12 +58,21 @@ export class CountryController {
   //FIND ALL
   findAll() {
     return this.countryService.findAll({
+      relations: { movies: true },
       where: {
         is_deleted: false,
       },
       select: {
         id: true,
         name: true,
+        movies: {
+          createdAt: true,
+          image_url: true,
+          video_url: true,
+          id: true,
+          title: true,
+          duration: true,
+        },
       },
       order: { createdAt: 'DESC' },
     });
@@ -80,6 +89,7 @@ export class CountryController {
   // FIND ONE
   findOne(@Param('id') id: number) {
     return this.countryService.findOneBY({
+      relations: { movies: true },
       where: {
         id,
         is_deleted: false,
@@ -89,6 +99,14 @@ export class CountryController {
         updatedAt: true,
         id: true,
         name: true,
+        movies: {
+          createdAt: true,
+          image_url: true,
+          video_url: true,
+          id: true,
+          title: true,
+          duration: true,
+        },
       },
       order: { createdAt: 'DESC' },
     });

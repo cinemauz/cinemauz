@@ -3,7 +3,7 @@ import { BaseEntity } from 'src/common/database/base.entity';
 import { CustomerEntity } from '../users/customer.entity';
 import { TicketEntity } from './ticket.entity';
 
-@Entity('orders')
+@Entity('order')
 export class OrderEntity extends BaseEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   total_price: number;

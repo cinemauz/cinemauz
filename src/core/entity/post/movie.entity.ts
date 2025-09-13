@@ -57,7 +57,7 @@ export class MovieEntity extends BaseEntity {
   @Column({ type: 'int' })
   admin_id: number;
 
-  // ---------------------------- ADMIN ID ----------------------------
+  // ---------------------------- ADMIN RELATION ----------------------------
 
   @ManyToOne(() => AdminEntity, (admin) => admin.movies, {
     onUpdate: 'CASCADE',
@@ -66,7 +66,7 @@ export class MovieEntity extends BaseEntity {
   @JoinColumn({ name: 'admin_id' })
   admin: AdminEntity;
 
-  // ---------------------------- GENRE ID ----------------------------
+  // ---------------------------- GENRE RELATION ----------------------------
 
   @ManyToOne(() => GenreEntity, (genre) => genre.movies, {
     onUpdate: 'CASCADE',
@@ -75,7 +75,7 @@ export class MovieEntity extends BaseEntity {
   @JoinColumn({ name: 'genre_id' })
   genre: GenreEntity;
 
-  // ---------------------------- COUNNTRY ID----------------------------
+  // ---------------------------- COUNNTRY RELATION----------------------------
 
   @ManyToOne(() => CountryEntity, (admin) => admin.movies, {
     onUpdate: 'CASCADE',
@@ -84,7 +84,7 @@ export class MovieEntity extends BaseEntity {
   @JoinColumn({ name: 'country_id' })
   country: CountryEntity;
 
-  // ---------------------------- REVIEWS ----------------------------
+  // ---------------------------- REVIEWS RELATION ----------------------------
 
   @OneToMany(() => ReviewEntity, (review) => review.movie, {
     cascade: true,

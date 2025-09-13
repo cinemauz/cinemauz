@@ -17,11 +17,13 @@ export class PostSawgger {
     createdAt: '2025-09-13T07:02:33.525Z',
     updatedAt: '2025-09-13T07:02:33.525Z',
     name: 'Uzbekiston',
+    movies: [],
   };
 
   static countryAll = {
-    id: 1,
-    name: 'Uzbekiston',
+    id: 2,
+    name: 'Uzbeksiton',
+    movies: [],
   };
 
   // ------------------------ MOVIE ------------------------
@@ -104,5 +106,17 @@ export class PostSawgger {
       createdAt: '2025-09-13T14:35:25.417Z',
       title: 'Inception 2',
     },
+  };
+
+  // --------------------------- ROOM ---------------------------
+
+  static roomDate = {
+    id: 2,
+    createdAt: '2025-09-13T16:05:35.815Z',
+    updatedAt: '2025-09-13T16:05:35.815Z',
+    name: 'VIP Hall 2',
+    location: '1st Floor, Building A',
+    total_seats: 120,
+    is_active: true,
   };
 }
