@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
@@ -12,7 +12,7 @@ export class EmailWithOtp {
   // --------------------------------------- EMAIL ---------------------------------------
   @ApiProperty({
     description: 'Tizimga kirish uchun tasdidlash uchun Email',
-    example: 'www.komol8689@gmail.com',
+    example: 'www.example@gmail.com',
   })
   @IsEmail()
   @IsString()
@@ -29,10 +29,6 @@ export class EmailWithOtp {
   otp?: number;
 
   // --------------------------------------- NEW PASSWORD ---------------------------------------
-  @ApiProperty({
-    description: 'Yangi Password',
-    example: '@Komol7390x123',
-  })
   @IsStrongPassword()
   @IsString()
   @IsOptional()

@@ -13,8 +13,17 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { customerAll, customerData, tokenRes } from 'src/common/document/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import {
+  customerAll,
+  customerData,
+  tokenRes,
+} from 'src/common/document/swagger';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -33,13 +42,14 @@ import { TokenUser } from 'src/common/enum/token-user';
 import type { IToken } from 'src/infrastructure/token/token.interface';
 import type { Response } from 'express';
 import { EmailWithOtp } from './dto/with-email.dt';
+import { config } from 'src/config/env.config';
 
 @Controller('customer')
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
     private readonly authService: AuthService,
-  ) { }
+  ) {}
 
   // ================================= REGIRSTRATION =================================
 
@@ -47,7 +57,7 @@ export class CustomerController {
   @ApiOperation({ summary: 'Created Customer' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
-      {email:'www.example@gmail.com'},
+      { email: 'www.example@gmail.com' },
       HttpStatus.OK,
       'Waiting otp on Email',
     ),
@@ -55,18 +65,18 @@ export class CustomerController {
   // ENDPOINT
   @Post()
 
-  // CREATED
+  // CONFIRM OTP FOR REGISTRED
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.createCustomer(createCustomerDto);
   }
 
-   // ================================= CONFRIM OTP REGIRSTRATION  =================================
+  // ================================= CONFRIM OTP REGIRSTRATION  =================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Confirm OTP' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse(
-      {customerData},
+      { customerData },
       HttpStatus.OK,
       'Created Customer',
     ),
@@ -74,9 +84,66 @@ export class CustomerController {
   // ENDPOINT
   @Post('otp')
 
-  // CREATED
+  // REGISTRED
   registration(@Body() emailWithOtp: EmailWithOtp) {
     return this.customerService.registrationOtp(emailWithOtp);
+  }
+
+  // ================================= FORGET PASSWORD (1/3) =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Forget password' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse(
+      { email: 'www.example@gmail.com' },
+      HttpStatus.OK,
+      'Send OTP to Email',
+    ),
+  )
+  // ENDPOINT
+  @Post('forget-password')
+
+  // FORGET PASSWORD
+  forgetPassword(@Body() emailWithOtp: EmailWithOtp) {
+    return this.customerService.forgetPassword(emailWithOtp);
+  }
+
+  // ================================= CONFIRM OTP FOR FORGET PASSWORD (2/3) =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Confirm password for update' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse(
+      { link: `http:localhost:3000/update-password/url` },
+      HttpStatus.OK,
+      'Enter this link and update',
+    ),
+  )
+  // ENDPOINT
+  @Post('confirm-otp-for-password')
+
+  // FORGET PASSWORD
+  confirmOtpWithEmail(@Body() emailWithOtp: EmailWithOtp) {
+    return this.customerService.confirmOtpWithEmail(emailWithOtp);
+  }
+
+  // ================================= UPDATE PASSWORD FOR FORGET PASSWORD (3/3) =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Update password enter new password' })
+  @ApiResponse(
+    SwaggerApi.ApiSuccessResponse(
+      {},
+      HttpStatus.OK,
+      'Enter this link and update',
+    ),
+  )
+  // ENDPOINT
+  @Post(String(config.UPDATE_URL))
+
+  // FORGET PASSWORD
+  updatePassword(@Body() emailWithOtp: EmailWithOtp) {
+    return this.customerService.updatePassword(emailWithOtp);
   }
 
   // ================================= SIGN IN =================================
@@ -133,7 +200,7 @@ export class CustomerController {
       this.customerService.getRepository,
       token,
       res,
-      TokenUser.Customer
+      TokenUser.Customer,
     );
   }
 
@@ -155,10 +222,15 @@ export class CustomerController {
   // UPDATE PASSWORD
   updatePassoword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePassword: UpdatePassword
+    @Body() updatePassword: UpdatePassword,
   ) {
-    const { old_password, new_password } = updatePassword
-    return this.authService.UpdatePassword(old_password, new_password, id, this.customerService.getRepository)
+    const { old_password, new_password } = updatePassword;
+    return this.authService.UpdatePassword(
+      old_password,
+      new_password,
+      id,
+      this.customerService.getRepository,
+    );
   }
 
   // ================================= GET ALL PAGENATION =================================
@@ -177,7 +249,6 @@ export class CustomerController {
 
   // PAGENATION
   findAllWithPagenation(@Query() queryDto: QueryPagination) {
-
     const { query, limit, page } = queryDto;
 
     return this.customerService.findAllWithPagination(query, limit, page);
@@ -200,7 +271,7 @@ export class CustomerController {
   // FIND ALL
   findAll() {
     return this.customerService.findAll({
-      where: { is_deleted: false, role: Roles.ADMIN },
+      where: { is_deleted: false, role: Roles.CUSTOMER },
       select: {
         id: true,
         email: true,

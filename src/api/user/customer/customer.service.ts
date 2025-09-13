@@ -170,11 +170,14 @@ export class CustomerService extends BaseService<
       { id },
       { email, hashed_password, is_active: active },
     );
+
+    // show user
     return await this.findOneById(id);
   }
+
   // ============================ FORGET PASSWORD ============================
-  async forgetPassword(forgetPassword: EmailWithOtp) {
-    
+
+  async forgetPassword(forgetPassword: EmailWithOtp): Promise<ISuccessRes> {
     // get email
     const { email } = forgetPassword;
     const exist = await this.customerRepo.findOne({ where: { email } });
@@ -185,6 +188,9 @@ export class CustomerService extends BaseService<
     // take OTP
     const otp = generateOTP(6);
 
+    // save code on redis
+    await this.redis.setRedis(email, String(otp));
+
     // send OTP
     await this.bot.sendCode({ email, otp });
 
@@ -192,8 +198,53 @@ export class CustomerService extends BaseService<
     await this.email.sendOtpEmail(email, otp);
 
     // return email
-    successRes({ email });
+
+    return successRes({ email });
   }
+
+  // ============================ CONFIRM OTP FOR FORGET PASSWORD ============================
+  async confirmOtpWithEmail(forgetPassword: EmailWithOtp) {
+    
+    // dictructure
+    const { email, otp } = forgetPassword;
+
+    // get email
+    const exist = await this.customerRepo.findOne({ where: { email } });
+    if (!exist) {
+      throw new NotFoundException(`this ${email} not found on Customer`);
+    }    
+
+    // check OTP
+    const redisOtp = await this.redis.getRedis(email);
+
+    if (Number(redisOtp) != otp) {
+      throw new ConflictException('OTP is invalid');
+    }
+
+    // return email and url
+    return successRes({ email, url: config.UPDATE_URL });
+  }
+
+  // ============================ UPDATE PASSwORD FOR FORGET PASSWORD  ============================
+
+  async updatePassword(forgetPassword: EmailWithOtp) {
+    const { new_password, email } = forgetPassword;
+
+    // get email
+    const exist = await this.customerRepo.findOne({ where: { email } });
+    if (!exist) {
+      throw new NotFoundException(`this ${email} not found on Customer`);
+    }
+
+    // hashed password
+    const hashed_password = await this.crypto.encrypt(String(new_password));
+
+    // update password
+    await this.customerRepo.update({ id: exist.id }, { hashed_password });
+
+    return successRes({});
+  }
+
   // ================================ SIGN IN ================================
 
   async signIn(signInDto: SignInCustomer, res: Response) {
@@ -238,7 +289,9 @@ export class CustomerService extends BaseService<
 
     return successRes({ token: accessToken });
   }
+
   // ============================ FIND ALL PAGENATION ============================
+
   async findAllWithPagination(
     query: string = '',
     limit: number = 10,

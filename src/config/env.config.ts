@@ -12,7 +12,7 @@ type ConfigType = {
     PASSWORD: string;
     USERNAME: string;
     NAME: string;
-    ID:number
+    ID: number;
   };
 
   TOKEN: {
@@ -26,17 +26,19 @@ type ConfigType = {
     HOST: string;
     PORT: number;
     PASSWORD: string;
-    TIME:number
+    TIME: number;
   };
 
-  TELEGRAM:{
-    TOKEN:string
+  TELEGRAM: {
+    TOKEN: string;
   };
 
-  OTP:{
-    NUMBER:number,
-    TIME:number
-  }
+  OTP: {
+    NUMBER: number;
+    TIME: number;
+  };
+
+  UPDATE_URL: string;
 };
 
 export const config: ConfigType = {
@@ -52,7 +54,7 @@ export const config: ConfigType = {
     PASSWORD: String(process.env.ADMIN_PASSWORD),
     USERNAME: String(process.env.ADMIN_USERNAME),
     NAME: String(process.env.ADMIN_NAME),
-    ID:Number(process.env.ADMIN_ID)
+    ID: Number(process.env.ADMIN_ID),
   },
 
   TOKEN: {
@@ -66,15 +68,17 @@ export const config: ConfigType = {
     HOST: String(process.env.REDIS_HOST),
     PORT: Number(process.env.REDIS_PORT),
     PASSWORD: String(process.env.REDIS_PASSWORD),
-    TIME:Number(process.env.REDIS_TIME)
+    TIME: Number(process.env.REDIS_TIME),
   },
 
-  TELEGRAM:{
-    TOKEN:String(process.env.TELEGRAM_TOKEN)
+  TELEGRAM: {
+    TOKEN: String(process.env.TELEGRAM_TOKEN),
   },
 
-  OTP:{
-    NUMBER:Number(process.env.OTP_NUMBER),
-    TIME:Number(process.env.OTP_TIME)
-  }
+  OTP: {
+    NUMBER: Number(process.env.OTP_NUMBER),
+    TIME: Number(process.env.OTP_TIME),
+  },
+
+  UPDATE_URL: String(process.env.UPDATE_URl),
 };
