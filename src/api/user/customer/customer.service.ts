@@ -55,7 +55,7 @@ export class CustomerService extends BaseService<
     private readonly email: EmailService,
     private readonly transaction: TransactionService,
   ) {
-    super(customerRepo);
+    super(customerRepo); 
   }
 
   // ================================ CREATE CUSTOMER (1/2) ================================
