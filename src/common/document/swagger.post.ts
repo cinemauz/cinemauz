@@ -250,4 +250,14 @@ export class PostSawgger {
       },
     },
   };
+
+  // ----------------------------- ORDER -----------------------------------
+  static orderDate = {
+    id: 5,
+    total_price: 77.5,
+    quantity: 5,
+    status: true,
+    customer_id: 3,
+    movie_id: 1,
+  };
 }

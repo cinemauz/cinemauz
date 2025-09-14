@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsBoolean, IsInt, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsBoolean,
+  IsInt,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateOrderDto {
   // ------------------------------ QUANTITY ------------------------------
@@ -22,12 +28,12 @@ export class CreateOrderDto {
 
   // ------------------------------ TICKET ID ------------------------------
   @ApiProperty({
-    description: 'Bilet ID',
+    description: 'Kinoni ID',
     example: 10,
   })
   @IsInt()
   @IsNotEmpty()
-  ticket_id: number;
+  movie_id: number;
 
   // ------------------------------ STATUS ------------------------------
   @ApiPropertyOptional({
@@ -37,13 +43,4 @@ export class CreateOrderDto {
   @IsBoolean()
   @IsOptional()
   status?: boolean;
-
-  // ------------------------------ TOTAL PRICE ------------------------------
-  @ApiPropertyOptional({
-    description: 'Buyurtma umumiy narxi',
-    example: 49.99,
-  })
-  @IsNumber()
-  @IsOptional()
-  total_price: number;
 }

@@ -112,6 +112,7 @@ export class MovieController {
       },
       relations: { admin: true, genre: true, country: true },
       select: {
+        id: true,
         createdAt: true,
         title: true,
         description: true,
