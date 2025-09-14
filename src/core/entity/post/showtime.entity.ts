@@ -1,7 +1,8 @@
 import { BaseEntity } from 'src/common/database/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { MovieEntity } from './movie.entity';
 import { RoomEntity } from './room.entity';
+import { TicketEntity } from './ticket.entity';
 
 @Entity('showtime')
 export class ShowtimeEntity extends BaseEntity {
@@ -19,16 +20,6 @@ export class ShowtimeEntity extends BaseEntity {
 
   @Column({ type: 'int' })
   room_id: number;
-
-  // -------------------- START TIME --------------------
-
-  @Column({ type: 'varchar' })
-  start_time: string;
-
-  // -------------------- END TIME --------------------
-
-  @Column({ type: 'varchar' })
-  end_time: string;
 
   // -------------------- IS ACTIVE --------------------
 
@@ -58,4 +49,12 @@ export class ShowtimeEntity extends BaseEntity {
   })
   @JoinColumn({ name: 'movie_id' })
   movies: MovieEntity[];
+
+  // -------------------- TICKET REALATION --------------------
+
+  @OneToMany(() => TicketEntity, (ticket) => ticket.showtime, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  tickets: TicketEntity[];
 }

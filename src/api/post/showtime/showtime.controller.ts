@@ -67,8 +67,6 @@ export class ShowtimeController {
       },
       select: {
         id: true,
-        start_time: true,
-        end_time: true,
         ticket_quantity: true,
         is_active: true,
         room: {
@@ -101,14 +99,13 @@ export class ShowtimeController {
       relations: {
         room: true,
         movies: true,
+        tickets: true,
       },
       where: {
         is_deleted: false,
       },
       select: {
         id: true,
-        start_time: true,
-        end_time: true,
         ticket_quantity: true,
         is_active: true,
         createdAt: true,
@@ -123,6 +120,12 @@ export class ShowtimeController {
           id: true,
           title: true,
           createdAt: true,
+        },
+        tickets: {
+          id: true,
+          price: true,
+          status: true,
+          start_time: true,
         },
       },
       order: { createdAt: 'DESC' },
@@ -143,7 +146,10 @@ export class ShowtimeController {
   @ApiBearerAuth()
 
   // UPDATE
-  update(@Param('id') id: number, @Body() updateShowtimeDto: UpdateShowtimeDto) {
+  update(
+    @Param('id') id: number,
+    @Body() updateShowtimeDto: UpdateShowtimeDto,
+  ) {
     return this.showtimeService.updateShowtime(+id, updateShowtimeDto);
   }
 

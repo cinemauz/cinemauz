@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator";
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, Min } from "class-validator";
 
 export class CreateTicketDto {
   // ------------------------------ PRICE------------------------------
@@ -21,6 +21,31 @@ export class CreateTicketDto {
   @IsInt()
   @IsNotEmpty()
   showtime_id: number;
+
+  // ------------------------------ START TIME ------------------------------
+  @ApiProperty({
+    description: 'Filmnig boshlanish vaqti (HH:mm:ss formatida)',
+    example: '13:00:00',
+  })
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/, {
+    message: 'Begin movie time must be in HH:mm:ss format',
+  })
+  @IsString()
+  @IsNotEmpty()
+  start_time: string;
+
+  // ------------------------------ END TIME ------------------------------
+
+  @ApiProperty({
+    description: 'Filmnig tugash vaqti (HH:mm:ss formatida)',
+    example: '15:00:00',
+  })
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/, {
+    message: 'End movie time must be in HH:mm:ss format',
+  })
+  @IsString()
+  @IsNotEmpty()
+  end_time: string;
 
   // ------------------------------ STATUS ------------------------------
   @ApiPropertyOptional({

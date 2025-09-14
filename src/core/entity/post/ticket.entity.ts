@@ -1,24 +1,45 @@
-import { Column, Entity, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from 'src/common/database/base.entity';
-import { RoomEntity } from './room.entity';
 import { OrderEntity } from './order.entity';
+import { ShowtimeEntity } from './showtime.entity';
 
 @Entity('ticket')
 export class TicketEntity extends BaseEntity {
+  // -------------------- SEAT NUMBER --------------------
+
   @Column()
-  seat_number: string;
+  seat_number: number;
+  // -------------------- PRICE --------------------
 
   @Column({ type: 'decimal' })
   price: number;
 
+  // -------------------- SHOWTIME ID --------------------
+
   @Column({ type: 'int' })
   showtime_id: number;
 
+  // -------------------- STATUS --------------------
+
   @Column({ type: 'boolean', default: true })
   status: boolean;
+  // -------------------- START TIME --------------------
 
-  @OneToMany(() => OrderEntity, (order) => order.ticket, {
-    cascade: true,
+  @Column({ type: 'varchar' })
+  start_time: string;
+
+  // -------------------- END TIME --------------------
+
+  @Column({ type: 'varchar' })
+  end_time: string;
+
+  // ================================= REALATION =================================
+  // -------------------- SHOWTIME REALATION --------------------
+
+  @ManyToOne(() => ShowtimeEntity, (showtime) => showtime.tickets, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  orders: OrderEntity[];
+  @JoinColumn({ name: 'showtime_id' })
+  showtime: ShowtimeEntity;
 }
