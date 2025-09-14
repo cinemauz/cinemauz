@@ -1,26 +1,89 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { WalletEntity } from 'src/core/entity/post/wallet.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BaseService } from 'src/infrastructure/base/base.service';
+import { CustomerEntity } from 'src/core/entity/users/customer.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class WalletService {
-  create(createWalletDto: CreateWalletDto) {
-    return 'This action adds a new wallet';
+export class WalletService extends BaseService<
+  CreateWalletDto,
+  UpdateWalletDto,
+  WalletEntity
+> {
+  constructor(
+    // review
+    @InjectRepository(WalletEntity)
+    private readonly walletRepo: Repository<WalletEntity>,
+
+    // customer
+    @InjectRepository(CustomerEntity)
+    private readonly customerRepo: Repository<CustomerEntity>,
+  ) {
+    super(walletRepo);
   }
 
-  findAll() {
-    return `This action returns all wallet`;
+  // ============================ CREATE WALLET ============================
+
+  async createWallet(createWalletDto: CreateWalletDto) {
+    // distructure
+    const { card_number, customer_id } = createWalletDto;
+
+    // check card_number
+    const existNumber = await this.walletRepo.findOne({
+      where: { card_number },
+    });
+
+    // check deleted
+    if (!existNumber?.is_deleted) {
+      if (existNumber) {
+        throw new ConflictException(
+          `this card_number => ${card_number} already exist on Wallet`,
+        );
+      }
+    } else {
+      await this.remove(existNumber.id);
+    }
+
+    // check customer id
+    await this.findByIdRepository(this.customerRepo, customer_id);
+
+    // create
+    return super.create(createWalletDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wallet`;
-  }
+  // ============================ UPDATE WALLET ============================
 
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
-  }
+  async updateWallet(id: number, updateWalletDto: UpdateWalletDto) {
+    // distructure
+    const { card_number, customer_id } = updateWalletDto;
 
-  remove(id: number) {
-    return `This action removes a #${id} wallet`;
+    // check card_number
+    if (card_number) {
+      const existNumber = await this.walletRepo.findOne({
+        where: { card_number },
+      });
+
+      // check deleted
+      if (!existNumber?.is_deleted) {
+        if (existNumber) {
+          throw new ConflictException(
+            `this card_number => ${card_number} already exist on Wallet`,
+          );
+        }
+      } else {
+        await this.remove(existNumber.id);
+      }
+    }
+
+    // check customer id
+    if (customer_id) {
+      await this.findByIdRepository(this.customerRepo, customer_id);
+    }
+    
+    // update
+    return super.update(id, updateWalletDto);
   }
 }

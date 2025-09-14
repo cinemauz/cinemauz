@@ -54,17 +54,13 @@ export class ReviewService extends BaseService<
 
     // check movie id
     if (movie_id) {
-      if (movie_id) {
-        await this.findByIdRepository(this.movieRepo, movie_id);
-      }
+      await this.findByIdRepository(this.movieRepo, movie_id);
     }
 
     // check customer id
-    if (customer_id) {
-      if (customer_id) {
-        await this.findByIdRepository(this.customerRepo, customer_id);
-      }
-    }
+     if (customer_id) {
+       await this.findByIdRepository(this.customerRepo, customer_id);
+     }
     // update
     return super.update(id, updateReviewDto);
   }
