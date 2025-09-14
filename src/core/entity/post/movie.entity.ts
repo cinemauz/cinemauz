@@ -57,7 +57,7 @@ export class MovieEntity extends BaseEntity {
 
   @Column({ type: 'int' })
   admin_id: number;
-  
+
   // ================================= REALATION =================================
 
   // ---------------------------- ADMIN RELATION ----------------------------

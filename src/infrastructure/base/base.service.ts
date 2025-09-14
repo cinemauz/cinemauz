@@ -101,7 +101,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
     id: number,
   ): Promise<ISuccessRes> {
     const data = await repository.findOne({
-      where: { id } as unknown as Entity,
+      where: { id, is_deleted: false } as unknown as Entity,
     });
     if (!data) {
       throw new NotFoundException(
@@ -151,7 +151,7 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
   async softDelete(id: number): Promise<ISuccessRes> {
     // check id
     await this.findOneById(id);
-
+    
     // soft delete is is_deleted=true
     await this.baseRepo.update(id, {
       is_deleted: true,
