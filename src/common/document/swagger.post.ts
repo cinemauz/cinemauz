@@ -163,4 +163,29 @@ export class PostSawgger {
       title: 'Inception 2',
     },
   };
+
+  // --------------------------- WALLET ---------------------------
+
+  static walletDate = {
+    id: 3,
+    createdAt: '2025-09-14T10:14:01.698Z',
+    updatedAt: '2025-09-14T10:14:01.698Z',
+    card_name: 'Visa Platinum',
+    card_number: '1234567890123466',
+    balance: 1000.5,
+    phone_number: 998935720474,
+    customer_id: 4,
+  };
+
+  static walletAll = {
+    id: 3,
+    card_number: '1234567890123466',
+    balance: '1000.5',
+    phone_number: '998935720474',
+    customer: {
+      id: 4,
+      name: 'Alice Johnson',
+      email: 'www.komol8679@gmail.com',
+    },
+  };
 }

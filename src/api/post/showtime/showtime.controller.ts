@@ -38,8 +38,8 @@ export class ShowtimeController {
   @ApiBearerAuth()
 
   // CREATE
-  create(@Body() createRoomDto: CreateShowtimeDto) {
-    return this.showtimeService.createRoom(createRoomDto);
+  create(@Body() createShowtimeDto: CreateShowtimeDto) {
+    return this.showtimeService.createShowtime(createShowtimeDto);
   }
   // ================================ FIND ALL ================================
 
@@ -143,8 +143,8 @@ export class ShowtimeController {
   @ApiBearerAuth()
 
   // UPDATE
-  update(@Param('id') id: number, @Body() updateRoomDto: UpdateShowtimeDto) {
-    return this.showtimeService.updateRoom(+id, updateRoomDto);
+  update(@Param('id') id: number, @Body() updateShowtimeDto: UpdateShowtimeDto) {
+    return this.showtimeService.updateShowtime(+id, updateShowtimeDto);
   }
 
   // ================================ SOFT DELETE ================================

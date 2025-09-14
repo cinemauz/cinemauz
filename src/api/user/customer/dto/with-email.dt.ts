@@ -1,7 +1,5 @@
 import {
-  ApiHideProperty,
   ApiProperty,
-  ApiPropertyOptional,
 } from '@nestjs/swagger';
 import {
   IsEmail,
