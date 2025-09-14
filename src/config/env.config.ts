@@ -80,5 +80,5 @@ export const config: ConfigType = {
     TIME: Number(process.env.OTP_TIME),
   },
 
-  UPDATE_URL: String(process.env.UPDATE_URl),
+  UPDATE_URL: String(process.env.UPDATE_URL),
 };
