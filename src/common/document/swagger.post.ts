@@ -125,24 +125,38 @@ export class PostSawgger {
   static roomAll = {
     id: 1,
     name: 'VIP Hall 2',
-    location: '1st Floor, Building A',
-    total_seats: 120,
     is_active: true,
+    showtimes: [
+      {
+        id: 1,
+        is_active: true,
+        movies: {
+          id: 1,
+          title: 'Inception 2',
+        },
+      },
+    ],
   };
 
   // --------------------------- SHOW TIME ---------------------------
 
   static showtimeDate = {
     id: 1,
-    createdAt: '2025-09-13T18:07:43.317Z',
-    updatedAt: '2025-09-13T18:07:43.317Z',
-    movie_id: 1,
-    ticket_quantity: 100,
-    room_id: 1,
-    start_time: '13:00:00',
-    end_time: '15:00:00',
+    name: 'VIP Hall 2',
+    location: '1st Floor, Building A',
+    total_seats: 120,
     is_active: true,
-    seat_qantity: 120,
+    showtimes: [
+      {
+        id: 1,
+        is_active: true,
+        movies: {
+          id: 1,
+          title: 'Inception 2',
+          description: 'A mind-bending thriller about dreams within dreams.',
+        },
+      },
+    ],
   };
 
   static showtimeAll = {
