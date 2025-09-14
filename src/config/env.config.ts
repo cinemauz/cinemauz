@@ -46,7 +46,7 @@ export const config: ConfigType = {
   APP_URL: String(process.env.APP_URL),
   DB_URL:
     String(process.env.NODE_ENV) == 'dev'
-      ? String(process.env.DEV_DB_URl)
+      ? String(process.env.DEV_DB_URL)
       : String(process.env.PROD_DEV_URL),
   DB_SYNC: String(process.env.NODE_ENV) === 'dev' ? true : false,
 
