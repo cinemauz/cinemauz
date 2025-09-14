@@ -57,13 +57,23 @@ export class CustomerService extends BaseService<
     createCustomerDto: CreateCustomerDto,
   ): Promise<ISuccessRes> {
     // destructure
-    const { email, password, ...rest } = createCustomerDto;
+    const { email, password, phone_number, ...rest } = createCustomerDto;
 
     // check email
     const existEmail = await this.customerRepo.findOne({ where: { email } });
     if (existEmail) {
       throw new ConflictException(
         `this user => ${email} is already exist on Customer`,
+      );
+    }
+
+    // check phone number
+    const existPhone = await this.customerRepo.findOne({
+      where: { phone_number } as unknown as CustomerEntity,
+    });
+    if (existPhone) {
+      throw new ConflictException(
+        `this user => ${phone_number} is already exist on Customer`,
       );
     }
 
@@ -74,7 +84,7 @@ export class CustomerService extends BaseService<
     const otp = generateOTP(config.OTP.NUMBER);
 
     // save Customer
-    const data = { ...rest, email, hashed_password, otp };
+    const data = { ...rest, email, phone_number, hashed_password, otp };
 
     // send Email OTP
     await this.email.sendOtpEmail(email, otp);
@@ -123,11 +133,10 @@ export class CustomerService extends BaseService<
 
     // delete otp on data
     delete user.otp;
-    const data = this.customerRepo.create(user);
+    delete user.new_password;
 
-    // save customer
-    const result = await this.customerRepo.save(user);
-    return successRes(result);
+    // save create
+    return super.create(user);
   }
   // ================================ UPDATE CUSTOMER ================================
 
@@ -142,12 +151,26 @@ export class CustomerService extends BaseService<
       throw new NotFoundException(`not found this id => ${id} on Customer`);
     }
 
-    // check username
-    const { email, password, is_active } = updateCustomerDto;
+    const { email, password, phone_number, is_active } = updateCustomerDto;
+
+    // check email
     if (email) {
-      const existName = await this.customerRepo.findOne({ where: { email } });
-      if (existName && existName.id != id) {
+      const existEmail = await this.customerRepo.findOne({ where: { email } });
+      if (existEmail && existEmail.id != id) {
         throw new ConflictException(`This username => ${email} already exist`);
+      }
+    }
+
+    // check phone number
+    if (phone_number) {
+      const existPhone = await this.customerRepo.findOne({
+        where: { phone_number } as unknown as CustomerEntity,
+      });
+
+      if (existPhone && existPhone.id != id) {
+        throw new ConflictException(
+          `This username => ${phone_number} already exist`,
+        );
       }
     }
 
@@ -159,6 +182,7 @@ export class CustomerService extends BaseService<
       if (password) {
         hashed_password = await this.crypto.encrypt(password);
       }
+
       // check is active
       if (is_active != null) {
         active = is_active;
@@ -204,7 +228,6 @@ export class CustomerService extends BaseService<
 
   // ============================ CONFIRM OTP FOR FORGET PASSWORD ============================
   async confirmOtpWithEmail(forgetPassword: EmailWithOtp) {
-    
     // dictructure
     const { email, otp } = forgetPassword;
 
@@ -212,7 +235,7 @@ export class CustomerService extends BaseService<
     const exist = await this.customerRepo.findOne({ where: { email } });
     if (!exist) {
       throw new NotFoundException(`this ${email} not found on Customer`);
-    }    
+    }
 
     // check OTP
     const redisOtp = await this.redis.getRedis(email);

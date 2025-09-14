@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
 
 export class CreateWalletDto {
   // ------------------------------ CARD NAME------------------------------
@@ -39,4 +39,15 @@ export class CreateWalletDto {
   @IsInt()
   @IsNotEmpty()
   customer_id: number;
+   // --------------------------------------- PHONE NUMBER ---------------------------------------
+  
+    @ApiProperty({
+      description: 'Mijozning telefon raqami',
+      example: 998935720473,
+    })
+    @IsNotEmpty()
+    @IsNumber({}, { message: 'Telefon raqam raqam bo\'lishi shart' })
+    @Min(998000000000, { message: 'Telefon raqam noto\'g\'ri' })
+    @Max(998999999999, { message: 'Telefon raqam noto\'g\'ri' })
+    phone_number: number;
 }

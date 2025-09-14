@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword, MinLength } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, IsStrongPassword, Max, Min, MinLength } from 'class-validator';
 
 export class CreateCustomerDto {
   // --------------------------------------- NAME ---------------------------------------
   @ApiProperty({
-    description: 'Mijozning to\'liq ismi',
+    description: "Mijozning to'liq ismi",
     example: 'Alice Johnson',
     minLength: 3,
   })
@@ -32,6 +32,18 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   password: string;
 
+  // --------------------------------------- PHONE NUMBER ---------------------------------------
+
+  @ApiProperty({
+    description: 'Mijozning telefon raqami',
+    example: 998935720473,
+  })
+  @IsNotEmpty()
+  @IsNumber({}, { message: 'Telefon raqam raqam bo\'lishi shart' })
+  @Min(998000000000, { message: 'Telefon raqam noto\'g\'ri' })
+  @Max(998999999999, { message: 'Telefon raqam noto\'g\'ri' })
+  phone_number: number;
+
   // --------------------------------------- IS ACTIVE ---------------------------------------
   @ApiPropertyOptional({
     description: 'Customer faol (true = faol, false = faol emas)',
@@ -45,5 +57,5 @@ export class CreateCustomerDto {
 
   @IsBoolean()
   @IsOptional()
-  is_deleted?: boolean
+  is_deleted?: boolean;
 }

@@ -1,3 +1,4 @@
+import { IsPhoneNumber } from 'class-validator';
 import { BaseEntity } from 'src/common/database/base.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -16,6 +17,12 @@ export class WalletEntity extends BaseEntity {
 
   @Column({ type: 'decimal' })
   balance: number;
+  
+  // -------------------- PHONE NUMBER --------------------
+
+  @Column({ type: 'varchar', length: 20 })
+  @IsPhoneNumber('UZ', { message: "Telefon raqami noto'g'ri" })
+  phone_number: string;
 
   // --------------------- CUSTOMER ID ---------------------
 

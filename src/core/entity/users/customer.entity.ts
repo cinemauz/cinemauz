@@ -3,6 +3,7 @@ import { Roles } from 'src/common/enum/Roles';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { OrderEntity } from '../post/order.entity';
 import { ReviewEntity } from '../post/review.entity';
+import { IsPhoneNumber } from 'class-validator';
 
 @Entity('customer')
 export class CustomerEntity extends BaseEntity {
@@ -30,6 +31,12 @@ export class CustomerEntity extends BaseEntity {
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
+
+  // -------------------- PHONE NUMBER --------------------
+
+  @Column({ type: 'varchar', length: 20 })
+  @IsPhoneNumber('UZ', { message: 'Telefon raqami noto\'g\'ri' })
+  phone_number: string;
 
   // -------------------- BALANCE --------------------
 

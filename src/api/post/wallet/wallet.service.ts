@@ -29,7 +29,7 @@ export class WalletService extends BaseService<
 
   async createWallet(createWalletDto: CreateWalletDto) {
     // distructure
-    const { card_number, customer_id } = createWalletDto;
+    const { card_number, customer_id, phone_number } = createWalletDto;
 
     // check card_number
     const existNumber = await this.walletRepo.findOne({
@@ -48,8 +48,16 @@ export class WalletService extends BaseService<
     }
 
     // check customer id
-    await this.findByIdRepository(this.customerRepo, customer_id);
+    const { data }: any = await this.findByIdRepository(
+      this.customerRepo,
+      customer_id,
+    );
 
+    if (data.phone_number != phone_number) {
+      throw new ConflictException(
+        `this ${phone_number} is incorect on Customer`,
+      );
+    }
     // create
     return super.create(createWalletDto);
   }
@@ -82,7 +90,7 @@ export class WalletService extends BaseService<
     if (customer_id) {
       await this.findByIdRepository(this.customerRepo, customer_id);
     }
-    
+
     // update
     return super.update(id, updateWalletDto);
   }
