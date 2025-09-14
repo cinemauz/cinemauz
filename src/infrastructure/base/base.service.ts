@@ -30,6 +30,8 @@ export class BaseService<CreateDto, UpdateDto, Entity extends ObjectLiteral> {
 
     // unhhide is_deleted
     delete data.is_deleted;
+    delete data.createdAt;
+    delete data.updatedAt;
 
     // return success
     return successRes(data);

@@ -34,6 +34,7 @@ export class TicketEntity extends BaseEntity {
   end_time: string;
 
   // ================================= REALATION =================================
+
   // -------------------- SHOWTIME REALATION --------------------
 
   @ManyToOne(() => ShowtimeEntity, (showtime) => showtime.tickets, {
@@ -42,4 +43,9 @@ export class TicketEntity extends BaseEntity {
   })
   @JoinColumn({ name: 'showtime_id' })
   showtime: ShowtimeEntity;
+
+  // -------------------- ORDER REALATION --------------------
+
+  @OneToMany(() => OrderEntity, (order) => order.ticket)
+  orders: OrderEntity[];
 }

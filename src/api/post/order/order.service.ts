@@ -1,68 +1,84 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderEntity } from 'src/core/entity/post/order.entity';
+import { BaseService } from 'src/infrastructure/base/base.service';
+import { CustomerEntity } from 'src/core/entity/users/customer.entity';
+import { TicketEntity } from 'src/core/entity/post/ticket.entity';
+import { MovieEntity } from 'src/core/entity/post/movie.entity';
 
 @Injectable()
-export class OrderService {
+export class OrderService extends BaseService<
+  CreateOrderDto,
+  UpdateOrderDto,
+  OrderEntity
+> {
   constructor(
+    // order
     @InjectRepository(OrderEntity)
-    private readonly orderRepository: Repository<OrderEntity>,
-  ) {}
+    private readonly orderRepo: Repository<OrderEntity>,
 
-  async create(dto: CreateOrderDto) {
-    // try {
-    //   const order = this.orderRepository.create(dto);
-    //   return await this.orderRepository.save(order);
-    // } catch (err) {
-    //   throw err;
-    // }
+    // customer
+    @InjectRepository(CustomerEntity)
+    private readonly customerRepo: Repository<CustomerEntity>,
+
+    // customer
+    @InjectRepository(MovieEntity)
+    private readonly movieRepo: Repository<MovieEntity>,
+
+    // ticket
+    @InjectRepository(TicketEntity)
+    private readonly ticketRepo: Repository<TicketEntity>,
+  ) {
+    super(orderRepo);
   }
 
-  async findAll() {
-    try {
-      return await this.orderRepository.find({
-        relations: ['customer', 'tickets', 'payments'],
-      });
-    } catch (err) {
-      throw err;
+  // ============================ CREATE ORDER ============================
+
+  async createOrder(createOrderDto: CreateOrderDto) {
+    // distructure
+    const { movie_id, customer_id, quantity, ...rest } = createOrderDto;
+
+    // check customer id
+    await this.findByIdRepository(this.customerRepo, customer_id);
+
+    // check ticket id
+
+    const movie: any = await this.movieRepo.findOne({
+      where: { id: movie_id },
+      relations: { showtimes: { tickets: true } },
+    });
+
+    const price = Number(movie?.showtimes[0].tickets.at(-1).price);
+
+    // // add total price
+    const total_price = Number(quantity) * price;
+    const result = { ...rest, total_price, customer_id, movie_id, quantity };
+
+    // // create
+
+    return super.create(result);
+  }
+
+  // ============================ UPDATE ORDER ============================
+
+  async updateOrder(id: number, updateOrderDto: UpdateOrderDto) {
+    // distructure
+    const { customer_id, movie_id, quantity } = updateOrderDto;
+
+    // check customer id
+    if (customer_id) {
+      await this.findByIdRepository(this.customerRepo, customer_id);
     }
-  }
 
-  async findOne(id: number) {
-    try {
-      const order = await this.orderRepository.findOne({
-        where: { id },
-        relations: ['customer', 'tickets', 'payments'],
-      });
-      if (!order) throw new NotFoundException('Order not found');
-      return order;
-    } catch (err) {
-      throw err;
+    // check ticket id
+    if (movie_id) {
+      await this.findByIdRepository(this.ticketRepo, movie_id);
     }
-  }
 
-  async update(id: number, dto: UpdateOrderDto) {
-    // try {
-    //   await this.orderRepository.update(id, dto);
-    //   const updated = await this.orderRepository.findOne({ where: { id } });
-    //   if (!updated) throw new NotFoundException('Order not found');
-    //   return updated;
-    // } catch (err) {
-    //   throw err;
-    // }
-  }
-
-  async remove(id: number): Promise<void> {
-    try {
-      const result = await this.orderRepository.delete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException('Order not found');
-      }
-    } catch (err) {
-      throw err;
-    }
+    // update
+    return super.update(id, updateOrderDto);
   }
 }

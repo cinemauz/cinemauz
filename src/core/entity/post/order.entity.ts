@@ -14,17 +14,24 @@ export class OrderEntity extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   status: boolean;
 
-  @Column({ name: 'customer_id', type: 'uuid' })
-  customerId: string;
+  @Column({ type: 'varchar' })
+  customer_id: string;
 
-  @Column({ name: 'ticket_id', type: 'uuid' })
-  ticketId: string;
+  @Column({ type: 'varchar' })
+  movie_id: string;
 
-  @ManyToOne(() => CustomerEntity, (customer) => customer.orders, { eager: true })
+  // ================================= REALATION =================================
+
+  // ---------------------------- CUSTOMER ----------------------------
+  @ManyToOne(() => CustomerEntity, (customer) => customer.orders, {
+    eager: true,
+  })
   @JoinColumn({ name: 'customer_id' })
   customer: CustomerEntity;
 
-  // @ManyToOne(() => TicketEntity, (ticket) => ticket.orders, { eager: true })
-  // @JoinColumn({ name: 'ticket_id' })
-  // ticket: TicketEntity;
+  // ---------------------------- TICKET RELATION ----------------------------
+
+  @ManyToOne(() => TicketEntity, (ticket) => ticket.orders, { eager: true })
+  @JoinColumn({ name: 'movie_id' })
+  ticket: TicketEntity;
 }
