@@ -188,4 +188,66 @@ export class PostSawgger {
       email: 'www.komol8679@gmail.com',
     },
   };
+  // --------------------------- TICKET ---------------------------
+
+  static ticketDate = {
+    message: 'All tickets created',
+    result: {
+      firstTicket: {
+        id: 121,
+        createdAt: '2025-09-14T14:38:07.011Z',
+        updatedAt: '2025-09-14T14:38:07.011Z',
+        seat_number: 1,
+        price: 15.5,
+        showtime_id: 1,
+        status: true,
+        start_time: '13:00:00',
+        end_time: '15:00:00',
+      },
+      lastTikect: {
+        id: 240,
+        createdAt: '2025-09-14T14:38:07.011Z',
+        updatedAt: '2025-09-14T14:38:07.011Z',
+        seat_number: 120,
+        price: 15.5,
+        showtime_id: 1,
+        status: true,
+        start_time: '13:00:00',
+        end_time: '15:00:00',
+      },
+    },
+    all_ticket_number: 120,
+  };
+
+  static ticketAll = {
+    id: 348,
+    seat_number: 108,
+    price: '15.5',
+    status: true,
+    start_time: '13:00:00',
+    end_time: '15:00:00',
+  };
+
+  static ticketOne = {
+    id: 121,
+    price: '15.5',
+    status: true,
+    start_time: '13:00:00',
+    end_time: '15:00:00',
+    showtime: {
+      id: 1,
+      is_active: true,
+      room: {
+        id: 1,
+        name: 'VIP Hall 2',
+        location: '1st Floor, Building A',
+        total_seats: 120,
+      },
+      movies: {
+        id: 1,
+        title: 'Inception 2',
+        description: 'A mind-bending thriller about dreams within dreams.',
+      },
+    },
+  };
 }

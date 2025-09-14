@@ -24,7 +24,7 @@ export class OrderEntity extends BaseEntity {
   @JoinColumn({ name: 'customer_id' })
   customer: CustomerEntity;
 
-  @ManyToOne(() => TicketEntity, (ticket) => ticket.orders, { eager: true })
-  @JoinColumn({ name: 'ticket_id' })
-  ticket: TicketEntity;
+  // @ManyToOne(() => TicketEntity, (ticket) => ticket.orders, { eager: true })
+  // @JoinColumn({ name: 'ticket_id' })
+  // ticket: TicketEntity;
 }

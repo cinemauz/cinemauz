@@ -81,7 +81,6 @@ export class MovieController {
         },
         showtimes: {
           id: true,
-          start_time: true,
           is_active: true,
           ticket_quantity: true,
           room: {

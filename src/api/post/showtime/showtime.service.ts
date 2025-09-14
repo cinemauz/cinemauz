@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateShowtimeDto } from './dto/create-showtime.dto';
 import { UpdateShowtimeDto } from './dto/update-showtime.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,7 +34,7 @@ export class ShowtimeService extends BaseService<
 
   async createShowtime(createShowtimeDto: CreateShowtimeDto) {
     // distructure
-    const { movie_id, room_id } = createShowtimeDto;
+    const { movie_id, room_id, ticket_quantity } = createShowtimeDto;
 
     // check movie id
     await this.findByIdRepository(this.movieRepo, movie_id);
@@ -42,6 +42,12 @@ export class ShowtimeService extends BaseService<
     // check customer id
     const { data }: any = await this.findByIdRepository(this.roomRepo, room_id);
 
+    // ticket quantity
+    if (ticket_quantity > data.total_seats) {
+      throw new ConflictException(
+        `You could not add ${ticket_quantity} on Showtime, Max:${data.total_seats}`,
+      );
+    }
     // create
     createShowtimeDto.seat_qantity = data.total_seats;
     return super.create(createShowtimeDto);
