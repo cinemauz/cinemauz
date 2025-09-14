@@ -24,9 +24,10 @@ import { WalletEntity } from 'src/core/entity/post/wallet.entity';
     CryptoService,
     BaseService,
     AuthService,
-    // TelegramService,
+    TelegramService,
     RedisService,
   ],
   exports: [CustomerService, TransactionService],
 })
 export class CustomerModule {}
+
