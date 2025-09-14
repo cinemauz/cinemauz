@@ -50,7 +50,7 @@ export class CustomerService extends BaseService<
 
     private readonly crypto: CryptoService,
     private readonly tokenService: TokenService,
-    private readonly bot: TelegramService,
+    // private readonly bot: TelegramService,
     private readonly redis: RedisService,
     private readonly email: EmailService,
     private readonly transaction: TransactionService,
@@ -60,54 +60,7 @@ export class CustomerService extends BaseService<
 
   // ================================ CREATE CUSTOMER ================================
 
-  async createCustomer(
-    createCustomerDto: CreateCustomerDto,
-  ): Promise<ISuccessRes> {
-    // destructure
-    const { email, password, phone_number, ...rest } = createCustomerDto;
-
-    // check email
-    const existEmail = await this.customerRepo.findOne({ where: { email } });
-    if (existEmail) {
-      throw new ConflictException(
-        `this user => ${email} is already exist on Customer`,
-      );
-    }
-
-    // check phone number
-    const existPhone = await this.customerRepo.findOne({
-      where: { phone_number } as unknown as CustomerEntity,
-    });
-    if (existPhone) {
-      throw new ConflictException(
-        `this user => ${phone_number} is already exist on Customer`,
-      );
-    }
-
-    // enrypt password
-    const hashed_password = await this.crypto.encrypt(password);
-
-    // generate otp
-    const otp = generateOTP(config.OTP.NUMBER);
-
-    // save Customer
-    const data = { ...rest, email, phone_number, hashed_password, otp };
-
-    // send Email OTP
-    await this.email.sendOtpEmail(email, otp);
-
-    // send telegram otp
-    // await this.bot.sendCode({ email, otp });
-
-    // save JSON format
-    const result = JSON.stringify(data);
-
-    // save redis
-    await this.redis.setRedis(email, result, config.OTP.TIME);
-
-    // return success
-    return successRes({ email });
-  }
+ a
 
   // ================================ REGSTRATION CUSTOMER ================================
 
@@ -261,7 +214,7 @@ export class CustomerService extends BaseService<
     await this.redis.setRedis(email, String(otp));
 
     // send OTP
-    await this.bot.sendCode({ email, otp });
+    // await this.bot.sendCode({ email, otp });
 
     // send email
     await this.email.sendOtpEmail(email, otp);
