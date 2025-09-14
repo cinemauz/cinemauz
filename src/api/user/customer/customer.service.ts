@@ -97,7 +97,7 @@ export class CustomerService extends BaseService<
     await this.email.sendOtpEmail(email, otp);
 
     // send telegram otp
-    await this.bot.sendCode({ email, otp });
+    // await this.bot.sendCode({ email, otp });
 
     // save JSON format
     const result = JSON.stringify(data);
