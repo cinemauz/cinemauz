@@ -19,7 +19,7 @@ import { WalletEntity } from 'src/core/entity/post/wallet.entity';
   providers: [
     CustomerService,
     TransactionService,
-    EmailService,
+    // EmailService,
     TokenService,
     CryptoService,
     BaseService,
