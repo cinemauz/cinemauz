@@ -52,7 +52,7 @@ export class CustomerService extends BaseService<
     private readonly tokenService: TokenService,
     private readonly bot: TelegramService,
     private readonly redis: RedisService,
-    private readonly email: EmailService,
+    // private readonly email: EmailService,
     private readonly transaction: TransactionService,
   ) {
     super(customerRepo); 
@@ -94,7 +94,7 @@ export class CustomerService extends BaseService<
     const data = { ...rest, email, phone_number, hashed_password, otp };
 
     // send Email OTP
-    await this.email.sendOtpEmail(email, otp);
+    // await this.email.sendOtpEmail(email, otp);
 
     // send telegram otp
     await this.bot.sendCode({ email, otp });
@@ -265,7 +265,7 @@ export class CustomerService extends BaseService<
     await this.bot.sendCode({ email, otp });
 
     // send email
-    await this.email.sendOtpEmail(email, otp);
+    // await this.email.sendOtpEmail(email, otp);
 
     // return email
 
