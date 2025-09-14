@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
@@ -9,6 +20,8 @@ import { RolesGuard } from 'src/common/guard/role.guard';
 import { AuthGuard } from 'src/common/guard/auth.guard';
 import { AccessRoles } from 'src/common/decorator/roles.decorator';
 import { Roles } from 'src/common/enum/Roles';
+import { GetRequestUser } from 'src/common/decorator/get-request.decorator';
+import type { IToken } from 'src/infrastructure/token/token.interface';
 
 @Controller('wallet')
 export class WalletController {
@@ -18,11 +31,11 @@ export class WalletController {
 
   // SWAGGER
   @ApiOperation({ summary: 'Create Wallet' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.reviewDate))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.walletDate))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.CUSTOMER)
+  @AccessRoles(Roles.SUPERADMIN, Roles.CUSTOMER)
 
   // ENDPOINT
   @Post()
@@ -38,91 +51,106 @@ export class WalletController {
   @ApiOperation({ summary: 'Get All Wallet' })
   @ApiResponse(
     SwaggerApi.ApiSuccessResponse([
-      PostSawgger.reviewAll,
-      PostSawgger.reviewAll,
+      PostSawgger.walletAll,
+      PostSawgger.walletAll,
     ]),
   )
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN)
 
   // ENDPOINT
   @Get()
+  @ApiBearerAuth()
 
   //FIND ALL
   findAll() {
-    // return this.walletService.findAll({
-    //   relations: {
-    //     customer: true,
-    //     movie: true,
-    //   },
-    //   where: {
-    //     is_deleted: false,
-    //   },
-    //   select: {
-    //     id: true,
-    //     rating: true,
-    //     comment: true,
-    //     customer: {
-    //       id: true,
-    //       name: true,
-    //       email: true,
-    //     },
-    //     movie: {
-    //       id: true,
-    //       title: true,
-    //       createdAt: true,
-    //     },
-    //   },
-    //   order: { createdAt: 'DESC' },
-    // });
+    return this.walletService.findAll({
+      relations: {
+        customer: true,
+      },
+      where: {
+        is_deleted: false,
+      },
+      select: {
+        id: true,
+        card_number: true,
+        phone_number: true,
+        balance: true,
+        customer: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
+    });
   }
   // ================================ GET ONE ================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Get One Wallet' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.reviewDate))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.walletDate))
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, Roles.CUSTOMER, Roles.ADMIN)
 
   // ENDPOINT
   @Get(':id')
+  @ApiBearerAuth()
 
   // FIND ONE
-  findOne(@Param('id') id: number) {
-    // return this.walletService.findOneBY({
-    //   relations: {
-    //     customer: true,
-    //     movie: true,
-    //   },
-    //   where: {
-    //     id,
-    //     is_deleted: false,
-    //   },
-    //   select: {
-    //     createdAt: true,
-    //     updatedAt: true,
-    //     id: true,
-    //     rating: true,
-    //     comment: true,
-    //     customer: {
-    //       id: true,
-    //       name: true,
-    //       email: true,
-    //     },
-    //     movie: {
-    //       id: true,
-    //       title: true,
-    //       createdAt: true,
-    //     },
-    //   },
-    //   order: { createdAt: 'DESC' },
-    // });
+  async findOne(@GetRequestUser('user') user: IToken, @Param('id') id: number) {
+    // check user wallet
+    const wallet = await this.walletService.getRepository.findOne({
+      where: { id },
+    });
+    if (!wallet) {
+      throw new NotFoundException(`not found this id card => ${id} on Wallet`);
+    }
+    if (
+      wallet.customer_id == user.id ||
+      user.role == Roles.SUPERADMIN ||
+      user.role == Roles.ADMIN
+    ) {
+      return this.walletService.findOneBY({
+        relations: {
+          customer: true,
+        },
+        where: {
+          id,
+          is_deleted: false,
+        },
+        select: {
+          createdAt: true,
+          id: true,
+          card_name: true,
+          card_number: true,
+          balance: true,
+          phone_number: true,
+          customer: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        order: { createdAt: 'DESC' },
+      });
+    } else {
+      throw new ForbiddenException(`You could not show this id card => ${id} on Wallet`);
+    }
   }
+
   // ================================ UPDATE ================================
 
   // SWAGGER
   @ApiOperation({ summary: 'Update Wallet' })
-  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.reviewDate))
+  @ApiResponse(SwaggerApi.ApiSuccessResponse(PostSawgger.walletDate))
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.CUSTOMER)
+  @AccessRoles(Roles.SUPERADMIN)
 
   // ENDPOINT
   @Patch(':id')
@@ -141,7 +169,7 @@ export class WalletController {
 
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
-  @AccessRoles(Roles.SUPERADMIN, Roles.ADMIN, Roles.CUSTOMER)
+  @AccessRoles(Roles.SUPERADMIN, Roles.CUSTOMER)
 
   // ENDPOINT
   @Patch('delete/:id')

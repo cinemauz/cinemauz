@@ -43,6 +43,7 @@ import type { IToken } from 'src/infrastructure/token/token.interface';
 import type { Response } from 'express';
 import { EmailWithOtp } from './dto/with-email.dt';
 import { config } from 'src/config/env.config';
+import { BalanceDto } from './dto/deposit-balance';
 
 @Controller('customer')
 export class CustomerController {
@@ -89,6 +90,28 @@ export class CustomerController {
     return this.customerService.registrationOtp(emailWithOtp);
   }
 
+  // ================================= DEPOSIT BALANCE =================================
+
+  // SWAGGER
+  @ApiOperation({ summary: 'Deposit balance' })
+  @ApiParam(SwaggerApi.ApiParam())
+  @ApiResponse(SwaggerApi.ApiSuccessResponse())
+
+  // GUARD
+  @UseGuards(AuthGuard, RolesGuard)
+  @AccessRoles(Roles.SUPERADMIN, 'ID')
+
+  // ENDPOINT
+  @Post('deposit-balance:id')
+  @ApiBearerAuth()
+
+  // DEPOSIT BALANCE
+  depositBalance(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() depositBalance: BalanceDto,
+  ) {
+    return this.customerService.depositBalance(depositBalance, id);
+  }
   // ================================= FORGET PASSWORD (1/3) =================================
 
   // SWAGGER
@@ -278,6 +301,7 @@ export class CustomerController {
         email: true,
         role: true,
         name: true,
+        phone_number: true,
         reviews: {
           comment: true,
           createdAt: true,
@@ -305,21 +329,34 @@ export class CustomerController {
   // FIND ONE
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.customerService.findOneById(+id, {
-      where: { is_deleted: false, role: Roles.CUSTOMER },
-      relations: { reviews: true },
+      where: {
+        is_deleted: false,
+        role: Roles.CUSTOMER,
+        wallets: { is_deleted: false },
+        // reviews: { is_deleted: false },
+      },
+      relations: { reviews: true, wallets: true },
       select: {
         id: true,
         email: true,
         role: true,
         balance: true,
+        phone_number: true,
         name: true,
-        hashed_password: true,
         createdAt: true,
         is_active: true,
         reviews: {
           comment: true,
           createdAt: true,
           rating: true,
+        },
+        wallets: {
+          id: true,
+          card_name: true,
+          card_number: true,
+          phone_number: true,
+          balance: true,
+          createdAt: true,
         },
       },
     });

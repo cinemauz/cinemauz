@@ -15,7 +15,7 @@ export class ShowtimeService extends BaseService<
   ShowtimeEntity
 > {
   constructor(
-    // room
+    //showtime
     @InjectRepository(ShowtimeEntity)
     private readonly showtimeRepo: Repository<ShowtimeEntity>,
 
@@ -23,16 +23,16 @@ export class ShowtimeService extends BaseService<
     @InjectRepository(MovieEntity)
     private readonly movieRepo: Repository<MovieEntity>,
 
-    // customer
+    // room
     @InjectRepository(RoomEntity)
     private readonly roomRepo: Repository<RoomEntity>,
   ) {
     super(showtimeRepo);
   }
 
-  // ============================ CREATE ROOM ============================
+  // ============================ CREATE SHOWTIME ============================
 
-  async createRoom(createShowtimeDto: CreateShowtimeDto) {
+  async createShowtime(createShowtimeDto: CreateShowtimeDto) {
     // distructure
     const { movie_id, room_id } = createShowtimeDto;
 
@@ -47,9 +47,9 @@ export class ShowtimeService extends BaseService<
     return super.create(createShowtimeDto);
   }
 
-  // ============================ UPDATE ROOM ============================
+  // ============================ UPDATE SHOWTIME ============================
 
-  async updateRoom(id: number, updateShowtimeDto: UpdateShowtimeDto) {
+  async updateShowtime(id: number, updateShowtimeDto: UpdateShowtimeDto) {
     // distructure
     const { movie_id, room_id } = updateShowtimeDto;
 

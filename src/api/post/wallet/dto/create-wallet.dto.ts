@@ -14,11 +14,11 @@ export class CreateWalletDto {
   // ------------------------------ CARD NUMBER ------------------------------
   @ApiProperty({
     description: 'Karta raqami',
-    example: 1234567890123456,
+    example: "1234567890123456",
   })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  card_number: number;
+  card_number: string;
 
   // ------------------------------ BALANCE ------------------------------
   @ApiProperty({
