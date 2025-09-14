@@ -92,17 +92,12 @@ export class GenreController {
         is_deleted: false,
       },
       select: {
-        createdAt: true,
-        updatedAt: true,
         id: true,
         name: true,
         movies: {
-          createdAt: true,
-          image_url: true,
-          video_url: true,
           id: true,
           title: true,
-          duration: true,
+          image_url: true,
         },
       },
       order: { createdAt: 'DESC' },

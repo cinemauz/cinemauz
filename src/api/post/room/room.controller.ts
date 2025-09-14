@@ -1,5 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Put, Post, UseGuards, Patch } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  Post,
+  UseGuards,
+  Patch,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
@@ -46,16 +61,26 @@ export class RoomController {
   //FIND ALL
   findAll() {
     return this.roomService.findAll({
-      // relations: { movies: true },
+      relations: {
+        showtimes: {
+          movies: true,
+        },
+      },
       where: {
         is_deleted: false,
       },
       select: {
         id: true,
         name: true,
-        location: true,
-        total_seats: true,
-        is_active:true
+        is_active: true,
+        showtimes: {
+          id: true,
+          is_active:true,
+          movies: {
+            id: true,
+            title: true,
+          },
+        },
       },
       order: { createdAt: 'DESC' },
     });
@@ -72,9 +97,12 @@ export class RoomController {
   // FIND ONE
   findOne(@Param('id') id: number) {
     return this.roomService.findOneBY({
-      // relations: { movies: true },
+      relations: {
+        showtimes: {
+          movies: true,
+        },
+      },
       where: {
-        id,
         is_deleted: false,
       },
       select: {
@@ -83,8 +111,16 @@ export class RoomController {
         location: true,
         total_seats: true,
         is_active: true,
+        showtimes: {
+          id: true,
+          is_active: true,
+          movies: {
+            id: true,
+            title: true || 'not movie',
+            description: true,
+          },
+        },
       },
-      order: { createdAt: 'DESC' },
     });
   }
   // ================================ UPDATE ================================

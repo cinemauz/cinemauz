@@ -11,6 +11,7 @@ import {
   Res,
   Query,
   ParseIntPipe,
+  ConflictException,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -41,6 +42,7 @@ import type { Response } from 'express';
 import { QueryPagination } from 'src/common/dto/query.pagenation';
 import { UpdatePassword } from './dto/update-password.dto';
 import { TokenUser } from 'src/common/enum/token-user';
+import { config } from 'src/config/env.config';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -149,6 +151,9 @@ export class AdminController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePassword: UpdatePassword,
   ) {
+     if (id == config.SUPERADMIN.ID) {
+       throw new ConflictException(`you could not this id => ${id} on Admin`);
+     }
     const { old_password, new_password } = updatePassword;
     return this.authService.UpdatePassword(
       old_password,
@@ -173,7 +178,6 @@ export class AdminController {
   // PAGENATION
   findAllWithPagenation(@Query() queryDto: QueryPagination) {
     const { query, limit, page } = queryDto;
-
     return this.adminService.findAllWithPagination(query, limit, page);
   }
   // ================================= GET ALL =================================
@@ -181,7 +185,7 @@ export class AdminController {
   // SWAGGER
   @ApiOperation({ summary: 'Get All Admin' })
   @ApiResponse(SwaggerApi.ApiSuccessResponse([adminAll, adminAll]))
-    
+
   // GUARD
   @UseGuards(AuthGuard, RolesGuard)
   @AccessRoles(Roles.SUPERADMIN)
@@ -220,7 +224,21 @@ export class AdminController {
 
   // FIND ONE
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.adminService.findOneById(+id);
+    return this.adminService.findOneById(+id, {
+      where: { role: Roles.ADMIN },
+      relations: { movies: true },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        is_active: true,
+        movies: {
+          id: true,
+          title: true,
+          createdAt: true,
+        },
+      },
+    });
   }
 
   // ================================= UPDATE =================================
@@ -244,6 +262,9 @@ export class AdminController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateAdminDto: UpdateAdminDto,
   ) {
+     if (id == config.SUPERADMIN.ID) {
+       throw new ConflictException(`you could not this id => ${id} on Admin`);
+     }
     return this.adminService.updateAdmin(+id, updateAdminDto, user);
   }
 
@@ -263,6 +284,9 @@ export class AdminController {
 
   // UPDATE
   softDelete(@Param('id', ParseIntPipe) id: number) {
+     if (id == config.SUPERADMIN.ID) {
+       throw new ConflictException(`you could not this id => ${id} on Admin`);
+     }
     return this.adminService.softDelete(+id);
   }
   // ================================= DELETE =================================
@@ -281,6 +305,9 @@ export class AdminController {
 
   // DELETE
   remove(@Param('id', ParseIntPipe) id: number) {
+    if (id == config.SUPERADMIN.ID) {
+      throw new ConflictException(`you could not this id => ${id} on Admin`);
+    }
     return this.adminService.remove(+id);
   }
 }

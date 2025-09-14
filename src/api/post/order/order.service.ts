@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -50,15 +54,23 @@ export class OrderService extends BaseService<
       where: { id: movie_id },
       relations: { showtimes: { tickets: true } },
     });
+    if (!movie) {
+      throw new NotFoundException(
+        `this movie  id => ${movie_id} not found on Movie`,
+      );
+    }
+    const price = Number(movie?.showtimes[0]?.tickets.at(-1)?.price);
 
-    const price = Number(movie?.showtimes[0].tickets.at(-1).price);
+    if (isNaN(price)) {
+      throw new ConflictException('error price');
+    }
 
     // // add total price
     const total_price = Number(quantity) * price;
+
     const result = { ...rest, total_price, customer_id, movie_id, quantity };
 
     // // create
-
     return super.create(result);
   }
 
